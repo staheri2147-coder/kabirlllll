@@ -1,0 +1,8 @@
+{
+  "name": "سامانه مدیریت فروش و حساب مشتری لوله پلی‌اتیلن",
+  "description": "نرم‌افزار جامع مدیریت فروش لوله پلی‌اتیلن، سفارش، فاکتور، حساب مشتری، پرداخت و چک، تحویل، برگشت، انبار مواد اولیه و گزارش‌ها",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

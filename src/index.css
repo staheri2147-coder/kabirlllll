@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  *,
+  *::before,
+  *::after,
+  html,
+  body,
+  input,
+  button,
+  select,
+  textarea,
+  table,
+  th,
+  td {
+    font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+
+  html.dark {
+    color-scheme: dark;
+    background-color: #020617;
+    color: #f8fafc;
+  }
+}
+
+.font-mono {
+  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-feature-settings: 'tnum' on;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm 5mm 5mm 5mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    position: static !important;
+    overflow: visible !important;
+    display: block !important;
+    direction: rtl !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* When a print modal is open, hide root application */
+  body:has(.print-modal-container) #root {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Un-nest root containers when printing without modal */
+  #root,
+  #root > div,
+  #root > div > div,
+  main {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block !important;
+    position: static !important;
+    background: #ffffff !important;
+  }
+
+  /* Completely hide all navigation, sidebars, buttons, toolbars in print */
+  nav,
+  aside,
+  header,
+  footer,
+  .no-print,
+  .no-print *,
+  [data-no-print="true"],
+  button {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Print Modal Container at top-level */
+  .print-modal-container {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    overflow: visible !important;
+    z-index: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-modal-card {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* Modal scroll wrappers */
+  .print-modal-card > div,
+  .print-modal-card .overflow-y-auto,
+  .zoomable-print-viewport,
+  .zoomable-print-sizer {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    position: static !important;
+    background: transparent !important;
+  }
+
+  .zoomable-print-content {
+    transform: none !important;
+    position: static !important;
+    margin: 0 auto !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* All printable document sheets */
+  #printable-document,
+  #printable-leave-slip,
+  #printable-employee-report,
+  #printable-expense-report,
+  #printable-warehouse-report,
+  #printable-production-report,
+  #printable-delivery-report,
+  #printable-report-center,
+  #printable-filter-report {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    overflow: visible !important;
+  }
+
+  #printable-document *,
+  #printable-filter-report *,
+  #printable-leave-slip *,
+  #printable-employee-report *,
+  #printable-expense-report *,
+  #printable-warehouse-report *,
+  #printable-production-report *,
+  #printable-delivery-report *,
+  #printable-report-center *,
+  [id^="printable-"] * {
+    visibility: visible !important;
+  }
+
+  #printable-leave-slip {
+    max-width: 190mm !important;
+    padding: 4mm 4mm !important;
+  }
+
+  /* All tables in printouts must be center aligned with crisp borders */
+  #printable-document table,
+  #printable-filter-report table,
+  #printable-leave-slip table,
+  #printable-employee-report table,
+  #printable-expense-report table,
+  #printable-warehouse-report table,
+  #printable-production-report table,
+  #printable-delivery-report table,
+  #printable-report-center table,
+  [id^="printable-"] table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    text-align: center !important;
+  }
+
+  #printable-document th,
+  #printable-document td,
+  #printable-filter-report th,
+  #printable-filter-report td,
+  #printable-leave-slip th,
+  #printable-leave-slip td,
+  #printable-employee-report th,
+  #printable-employee-report td,
+  #printable-expense-report th,
+  #printable-expense-report td,
+  #printable-warehouse-report th,
+  #printable-warehouse-report td,
+  #printable-production-report th,
+  #printable-production-report td,
+  #printable-delivery-report th,
+  #printable-delivery-report td,
+  #printable-report-center th,
+  #printable-report-center td,
+  [id^="printable-"] th,
+  [id^="printable-"] td {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    text-align: center !important;
+  }
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Vivid Modern Bright Dynamic Spectrum Border Animation for Login Page */
+@keyframes borderSpectrumSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spectrum-border-animated {
+  background: conic-gradient(
+    from 0deg,
+    #00f0ff 0%,
+    #3b82f6 10%,
+    #a855f7 22%,
+    #ec4899 35%,
+    #fb923c 48%,
+    #00f0ff 58%,
+    #38bdf8 68%,
+    #8b5cf6 78%,
+    #f43f5e 88%,
+    #00f0ff 100%
+  );
+  animation: borderSpectrumSpin 3s linear infinite;
+  will-change: transform;
+}
+
+.spectrum-border-glow {
+  background: conic-gradient(
+    from 180deg,
+    #00f0ff 0%,
+    #3b82f6 10%,
+    #a855f7 22%,
+    #ec4899 35%,
+    #fb923c 48%,
+    #00f0ff 58%,
+    #38bdf8 68%,
+    #8b5cf6 78%,
+    #f43f5e 88%,
+    #00f0ff 100%
+  );
+  animation: borderSpectrumSpin 3s linear infinite;
+  will-change: transform;
+}
