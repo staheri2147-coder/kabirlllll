@@ -220,18 +220,21 @@ export const ProductionManager: React.FC = () => {
   };
 
   const filteredLogs = logs.filter((l) => {
-    const query = searchQuery.toLowerCase();
-    const matchSearch =
-      (l.code && l.code.toLowerCase().includes(query)) ||
-      (l.size && l.size.toLowerCase().includes(query)) ||
-      (l.pipe_size && l.pipe_size.toLowerCase().includes(query)) ||
-      (l.customer_name && l.customer_name.toLowerCase().includes(query)) ||
-      (l.pressure && l.pressure.toLowerCase().includes(query)) ||
-      (l.die_mold && l.die_mold.toLowerCase().includes(query)) ||
-      (l.pin_needle && l.pin_needle.toLowerCase().includes(query)) ||
-      (l.notes && l.notes.toLowerCase().includes(query));
+    if (!l) return false;
+    const query = searchQuery.trim().toLowerCase();
+    if (query) {
+      const matchSearch =
+        (l.code && String(l.code).toLowerCase().includes(query)) ||
+        (l.size && String(l.size).toLowerCase().includes(query)) ||
+        (l.pipe_size && String(l.pipe_size).toLowerCase().includes(query)) ||
+        (l.customer_name && String(l.customer_name).toLowerCase().includes(query)) ||
+        (l.pressure && String(l.pressure).toLowerCase().includes(query)) ||
+        (l.die_mold && String(l.die_mold).toLowerCase().includes(query)) ||
+        (l.pin_needle && String(l.pin_needle).toLowerCase().includes(query)) ||
+        (l.notes && String(l.notes).toLowerCase().includes(query));
 
-    if (!matchSearch) return false;
+      if (!matchSearch) return false;
+    }
     if (typeFilter !== 'all' && (l.type || '') !== typeFilter) return false;
     return true;
   });
@@ -251,30 +254,35 @@ export const ProductionManager: React.FC = () => {
 
   const sortedLogs = React.useMemo(() => {
     return [...filteredLogs].sort((a, b) => {
+      if (!a && !b) return 0;
+      if (!a) return 1;
+      if (!b) return -1;
       let valA: any = '';
       let valB: any = '';
 
       if (sortKey === 'production_date') {
-        valA = new Date(a.production_date).getTime() || 0;
-        valB = new Date(b.production_date).getTime() || 0;
+        const dA = a.production_date || a.created_at || '';
+        const dB = b.production_date || b.created_at || '';
+        valA = dA ? new Date(dA).getTime() || 0 : 0;
+        valB = dB ? new Date(dB).getTime() || 0 : 0;
       } else if (sortKey === 'size') {
-        valA = parseFloat(a.size || a.pipe_size || '0') || 0;
-        valB = parseFloat(b.size || b.pipe_size || '0') || 0;
+        valA = parseFloat(String(a.size || a.pipe_size || '0')) || 0;
+        valB = parseFloat(String(b.size || b.pipe_size || '0')) || 0;
       } else if (sortKey === 'pressure') {
-        valA = a.pressure || '';
-        valB = b.pressure || '';
+        valA = String(a.pressure || '');
+        valB = String(b.pressure || '');
       } else if (sortKey === 'type') {
-        valA = a.type || '';
-        valB = b.type || '';
+        valA = String(a.type || '');
+        valB = String(b.type || '');
       } else if (sortKey === 'meters') {
-        valA = a.meters !== undefined ? a.meters : (a.meters_produced || 0);
-        valB = b.meters !== undefined ? b.meters : (b.meters_produced || 0);
+        valA = Number(a.meters !== undefined && a.meters !== null ? a.meters : (a.meters_produced || 0)) || 0;
+        valB = Number(b.meters !== undefined && b.meters !== null ? b.meters : (b.meters_produced || 0)) || 0;
       } else if (sortKey === 'total_weight') {
-        valA = a.total_weight !== undefined ? a.total_weight : (a.weight_kg || 0);
-        valB = b.total_weight !== undefined ? b.total_weight : (b.weight_kg || 0);
+        valA = Number(a.total_weight !== undefined && a.total_weight !== null ? a.total_weight : (a.weight_kg || 0)) || 0;
+        valB = Number(b.total_weight !== undefined && b.total_weight !== null ? b.total_weight : (b.weight_kg || 0)) || 0;
       } else if (sortKey === 'customer_name') {
-        valA = a.customer_name || '';
-        valB = b.customer_name || '';
+        valA = String(a.customer_name || '');
+        valB = String(b.customer_name || '');
       }
 
       if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
@@ -418,14 +426,15 @@ export const ProductionManager: React.FC = () => {
                 </tr>
               ) : (
                 sortedLogs.map((log) => {
-                  const mtrs = log.meters !== undefined ? log.meters : (log.meters_produced || 0);
-                  const wUnit = log.weight_unit !== undefined ? log.weight_unit : (log.weight_kg && mtrs ? parseFloat((log.weight_kg / mtrs).toFixed(3)) : 0);
-                  const totW = log.total_weight !== undefined ? log.total_weight : (log.weight_kg || 0);
+                  const mtrs = log.meters !== undefined && log.meters !== null ? Number(log.meters) || 0 : (log.meters_produced ? Number(log.meters_produced) || 0 : 0);
+                  const rawWUnit = log.weight_unit !== undefined && log.weight_unit !== null ? log.weight_unit : (log.weight_kg && mtrs ? Number(log.weight_kg) / Number(mtrs) : 0);
+                  const wUnit = typeof rawWUnit === 'number' ? rawWUnit : (parseFloat(String(rawWUnit)) || 0);
+                  const totW = log.total_weight !== undefined && log.total_weight !== null ? Number(log.total_weight) || 0 : (log.weight_kg ? Number(log.weight_kg) || 0 : 0);
 
                   return (
-                    <tr key={log.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition">
+                    <tr key={log.id || `prd-${Math.random()}`} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition">
                       <td className="py-3.5 px-3 font-bold text-slate-600 dark:text-slate-300 text-center font-mono">
-                        {formatJalaliDate(log.production_date)}
+                        {log.production_date ? formatJalaliDate(log.production_date) : (log.created_at ? formatJalaliDate(log.created_at) : '—')}
                       </td>
                       <td className="py-3.5 px-3 font-bold text-slate-800 dark:text-slate-200">
                         {log.size || log.pipe_size || '—'}

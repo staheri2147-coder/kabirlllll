@@ -259,7 +259,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     منوی سامانه
                   </div>
                   <div className="text-[10px] text-slate-400">
-                    کارخانه البرز پایپ
+                    کبیر لوله دره شهر
                   </div>
                 </div>
               </div>

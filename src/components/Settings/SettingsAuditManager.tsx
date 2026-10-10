@@ -95,6 +95,8 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
   const [userModalSuccess, setUserModalSuccess] = useState("");
   const [isSubmittingUser, setIsSubmittingUser] = useState(false);
   const [isSubmittingSettings, setIsSubmittingSettings] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState<"logo" | "stamp" | "bg" | null>(null);
+  const [imageNotice, setImageNotice] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Backup Reminder & Status State
   const [backupStatus, setBackupStatus] = useState(StorageService.checkBackupReminder());
@@ -142,85 +144,163 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
   // ----------------------------------------------------
   // COMPANY SETTINGS HANDLERS
   // ----------------------------------------------------
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert("حجم فایل لوگو نباید بیشتر از ۲ مگابایت باشد.");
+    if (file.size > 5 * 1024 * 1024) {
+      alert("حجم فایل لوگو نباید بیشتر از ۵ مگابایت باشد.");
+      e.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const base64 = evt.target?.result as string;
-      setSettings((prev) => ({
-        ...prev,
-        logo_url: base64,
-      }));
-    };
-    reader.readAsDataURL(file);
+    setUploadingImage("logo");
+    setImageNotice(null);
+    try {
+      const res = await StorageService.uploadImage(file, 'logo');
+      if (res.success && res.url) {
+        const updated = {
+          ...settings,
+          logo_url: res.url,
+        };
+        setSettings(updated);
+        StorageService.updateSettings(updated);
+        await StorageService.saveSettingsToHost(updated);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("polyethylene-settings-changed", { detail: updated }));
+        }
+        setImageNotice({ type: "success", text: "لوگوی رسمی با موفقیت در پوشه uploads هاست آپلود و ذخیره گردید." });
+        setTimeout(() => setImageNotice(null), 5000);
+      } else {
+        setImageNotice({ type: "error", text: res.message || "خطا در آپلود لوگو روی هاست" });
+      }
+    } catch (err: any) {
+      setImageNotice({ type: "error", text: "خطا در ارتباط با هاست: " + (err?.message || "نامشخص") });
+    } finally {
+      setUploadingImage(null);
+      e.target.value = "";
+    }
   };
 
-  const handleRemoveLogo = () => {
-    setSettings((prev) => ({
-      ...prev,
+  const handleRemoveLogo = async () => {
+    const updated = {
+      ...settings,
       logo_url: "",
-    }));
+    };
+    setSettings(updated);
+    StorageService.updateSettings(updated);
+    await StorageService.saveSettingsToHost(updated);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("polyethylene-settings-changed", { detail: updated }));
+    }
+    setImageNotice({ type: "success", text: "لوگوی شرکت حذف شد و تنظیمات بروزرسانی گردید." });
+    setTimeout(() => setImageNotice(null), 4000);
   };
 
-  const handleStampUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStampUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert("حجم فایل مهر و امضا نباید بیشتر از ۲ مگابایت باشد.");
+    if (file.size > 5 * 1024 * 1024) {
+      alert("حجم فایل مهر و امضا نباید بیشتر از ۵ مگابایت باشد.");
+      e.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const base64 = evt.target?.result as string;
-      setSettings((prev) => ({
-        ...prev,
-        stamp_signature_url: base64,
-      }));
-    };
-    reader.readAsDataURL(file);
+    setUploadingImage("stamp");
+    setImageNotice(null);
+    try {
+      const res = await StorageService.uploadImage(file, 'stamp');
+      if (res.success && res.url) {
+        const updated = {
+          ...settings,
+          stamp_signature_url: res.url,
+        };
+        setSettings(updated);
+        StorageService.updateSettings(updated);
+        await StorageService.saveSettingsToHost(updated);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("polyethylene-settings-changed", { detail: updated }));
+        }
+        setImageNotice({ type: "success", text: "مهر و امضای رسمی با موفقیت در پوشه uploads هاست آپلود و ذخیره گردید." });
+        setTimeout(() => setImageNotice(null), 5000);
+      } else {
+        setImageNotice({ type: "error", text: res.message || "خطا در آپلود مهر و امضا روی هاست" });
+      }
+    } catch (err: any) {
+      setImageNotice({ type: "error", text: "خطا در ارتباط با هاست: " + (err?.message || "نامشخص") });
+    } finally {
+      setUploadingImage(null);
+      e.target.value = "";
+    }
   };
 
-  const handleRemoveStamp = () => {
-    setSettings((prev) => ({
-      ...prev,
+  const handleRemoveStamp = async () => {
+    const updated = {
+      ...settings,
       stamp_signature_url: "",
-    }));
+    };
+    setSettings(updated);
+    StorageService.updateSettings(updated);
+    await StorageService.saveSettingsToHost(updated);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("polyethylene-settings-changed", { detail: updated }));
+    }
+    setImageNotice({ type: "success", text: "مهر و امضای شرکت حذف شد و تنظیمات بروزرسانی گردید." });
+    setTimeout(() => setImageNotice(null), 4000);
   };
 
-  const handleLoginBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLoginBgUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      alert("حجم فایل پس‌زمینه نباید بیشتر از ۳ مگابایت باشد.");
+    if (file.size > 8 * 1024 * 1024) {
+      alert("حجم فایل پس‌زمینه نباید بیشتر از ۸ مگابایت باشد.");
+      e.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const base64 = evt.target?.result as string;
-      setSettings((prev) => ({
-        ...prev,
-        login_background_url: base64,
-      }));
-    };
-    reader.readAsDataURL(file);
+    setUploadingImage("bg");
+    setImageNotice(null);
+    try {
+      const res = await StorageService.uploadImage(file, 'bg');
+      if (res.success && res.url) {
+        const updated = {
+          ...settings,
+          login_background_url: res.url,
+        };
+        setSettings(updated);
+        StorageService.updateSettings(updated);
+        await StorageService.saveSettingsToHost(updated);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("polyethylene-settings-changed", { detail: updated }));
+        }
+        setImageNotice({ type: "success", text: "تصویر پس‌زمینه صفحه ورود با موفقیت در پوشه uploads هاست آپلود و ذخیره گردید." });
+        setTimeout(() => setImageNotice(null), 5000);
+      } else {
+        setImageNotice({ type: "error", text: res.message || "خطا در آپلود تصویر پس‌زمینه روی هاست" });
+      }
+    } catch (err: any) {
+      setImageNotice({ type: "error", text: "خطا در ارتباط با هاست: " + (err?.message || "نامشخص") });
+    } finally {
+      setUploadingImage(null);
+      e.target.value = "";
+    }
   };
 
-  const handleRemoveLoginBg = () => {
-    setSettings((prev) => ({
-      ...prev,
+  const handleRemoveLoginBg = async () => {
+    const updated = {
+      ...settings,
       login_background_url: "",
-    }));
+    };
+    setSettings(updated);
+    StorageService.updateSettings(updated);
+    await StorageService.saveSettingsToHost(updated);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("polyethylene-settings-changed", { detail: updated }));
+    }
+    setImageNotice({ type: "success", text: "تصویر پس‌زمینه به حالت پیش‌فرض بازگشت." });
+    setTimeout(() => setImageNotice(null), 4000);
   };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -425,6 +505,27 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
       )
     ) {
       const res = StorageService.setUserActive(targetUser.id, nextStatus);
+      if (res.success) {
+        setSaveSuccessMsg(res.message);
+        setTimeout(() => setSaveSuccessMsg(""), 4000);
+        loadAllData();
+      } else {
+        alert(res.message);
+      }
+    }
+  };
+
+  const handleDeleteUser = (targetUser: User) => {
+    if (targetUser.id === 'usr-1' || targetUser.id === activeUser.id) {
+      alert("حساب کاربری مدیر ارشد سیستم یا کاربری که با آن وارد سیستم هستید قابل حذف نیست.");
+      return;
+    }
+    if (
+      window.confirm(
+        `آیا از حذف حساب کاربری «${targetUser.name}» (${targetUser.username}) اطمینان دارید؟`
+      )
+    ) {
+      const res = StorageService.deleteUser(targetUser.id);
       if (res.success) {
         setSaveSuccessMsg(res.message);
         setTimeout(() => setSaveSuccessMsg(""), 4000);
@@ -880,18 +981,57 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
               </h2>
             </div>
 
+            {/* Feedback notification banner for image uploads */}
+            {imageNotice && (
+              <div
+                className={`p-3 rounded-xl border flex items-center justify-between gap-2 text-xs font-bold transition-all ${
+                  imageNotice.type === "success"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                    : "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {imageNotice.type === "success" ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                  )}
+                  <span>{imageNotice.text}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setImageNotice(null)}
+                  className="text-xs opacity-75 hover:opacity-100 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {/* Logo, Stamp & Login Background Upload Sections */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* 1. Official Logo */}
               <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2 flex flex-col justify-between">
                 <div>
-                  <label className="block text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 mb-2">
-                    <ImageIcon className="w-4 h-4 text-blue-600" />
-                    <span>لوگوی رسمی شرکت (سربرگ اسناد)</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-blue-600" />
+                      <span>لوگوی رسمی شرکت (سربرگ اسناد)</span>
+                    </label>
+                    {settings.logo_url && (
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded font-bold">
+                        ذخیره در هاست
+                      </span>
+                    )}
+                  </div>
 
                   <div className="w-full h-24 bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center p-2 overflow-hidden relative shadow-xs mb-3">
-                    {settings.logo_url ? (
+                    {uploadingImage === "logo" ? (
+                      <div className="flex flex-col items-center justify-center text-blue-600 gap-1.5">
+                        <RefreshCw className="w-6 h-6 animate-spin" />
+                        <span className="text-[10px] font-bold">در حال ذخیره روی هاست...</span>
+                      </div>
+                    ) : settings.logo_url ? (
                       <img
                         src={settings.logo_url}
                         alt="لوگوی شرکت"
@@ -908,13 +1048,29 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
 
                 <div className="space-y-2 text-xs">
                   <div className="flex flex-wrap items-center gap-2">
-                    <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold cursor-pointer transition shadow-xs text-xs">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>آپلود لوگو</span>
+                    <label
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white font-bold cursor-pointer transition shadow-xs text-xs ${
+                        uploadingImage === "logo"
+                          ? "bg-blue-400 cursor-not-allowed opacity-75"
+                          : "bg-blue-600 hover:bg-blue-700"
+                      }`}
+                    >
+                      {uploadingImage === "logo" ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>در حال آپلود...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>{settings.logo_url ? "تغییر لوگو" : "آپلود لوگو"}</span>
+                        </>
+                      )}
                       <input
                         type="file"
                         accept="image/png, image/jpeg, image/webp, image/svg+xml"
                         onChange={handleLogoUpload}
+                        disabled={uploadingImage !== null}
                         className="hidden"
                       />
                     </label>
@@ -923,7 +1079,8 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
                       <button
                         type="button"
                         onClick={handleRemoveLogo}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 font-bold transition cursor-pointer text-xs"
+                        disabled={uploadingImage !== null}
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 font-bold transition cursor-pointer text-xs disabled:opacity-50"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>حذف</span>
@@ -931,7 +1088,7 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
                     )}
                   </div>
                   <p className="text-[10.5px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    ابعاد افقی با پس‌زمینه شفاف (PNG) جهت چاپ در سربرگ فاکتورها. حداکثر ۲ مگابایت.
+                    فایل مستقیماً در پوشه <code className="text-blue-600 font-mono">uploads/</code> هاست ذخیره می‌شود. حداکثر ۵ مگابایت.
                   </p>
                 </div>
               </div>
@@ -939,13 +1096,25 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
               {/* 2. Official Stamp & Signature */}
               <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2 flex flex-col justify-between">
                 <div>
-                  <label className="block text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 mb-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>مهر و امضای رسمی کارخانه</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span>مهر و امضای رسمی کارخانه</span>
+                    </label>
+                    {settings.stamp_signature_url && (
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded font-bold">
+                        ذخیره در هاست
+                      </span>
+                    )}
+                  </div>
 
                   <div className="w-full h-24 bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center p-2 overflow-hidden relative shadow-xs mb-3">
-                    {settings.stamp_signature_url ? (
+                    {uploadingImage === "stamp" ? (
+                      <div className="flex flex-col items-center justify-center text-emerald-600 gap-1.5">
+                        <RefreshCw className="w-6 h-6 animate-spin" />
+                        <span className="text-[10px] font-bold">در حال ذخیره روی هاست...</span>
+                      </div>
+                    ) : settings.stamp_signature_url ? (
                       <img
                         src={settings.stamp_signature_url}
                         alt="مهر و امضای شرکت"
@@ -962,13 +1131,29 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
 
                 <div className="space-y-2 text-xs">
                   <div className="flex flex-wrap items-center gap-2">
-                    <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer transition shadow-xs text-xs">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>آپلود مهر و امضا</span>
+                    <label
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white font-bold cursor-pointer transition shadow-xs text-xs ${
+                        uploadingImage === "stamp"
+                          ? "bg-emerald-400 cursor-not-allowed opacity-75"
+                          : "bg-emerald-600 hover:bg-emerald-700"
+                      }`}
+                    >
+                      {uploadingImage === "stamp" ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>در حال آپلود...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>{settings.stamp_signature_url ? "تغییر مهر و امضا" : "آپلود مهر و امضا"}</span>
+                        </>
+                      )}
                       <input
                         type="file"
                         accept="image/png, image/jpeg, image/webp"
                         onChange={handleStampUpload}
+                        disabled={uploadingImage !== null}
                         className="hidden"
                       />
                     </label>
@@ -977,7 +1162,8 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
                       <button
                         type="button"
                         onClick={handleRemoveStamp}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 font-bold transition cursor-pointer text-xs"
+                        disabled={uploadingImage !== null}
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 font-bold transition cursor-pointer text-xs disabled:opacity-50"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>حذف</span>
@@ -985,7 +1171,7 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
                     )}
                   </div>
                   <p className="text-[10.5px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    با تیک زدن گزینه «افزودن مهر و امضا» در فاکتورها، رسیدها و برگه مرخصی به طور خودکار درج می‌شود.
+                    با تیک زدن گزینه «افزودن مهر و امضا» در فاکتورها، رسیدها و برگه مرخصی درج می‌شود.
                   </p>
                 </div>
               </div>
@@ -993,13 +1179,25 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
               {/* 3. Login Page Background */}
               <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2 flex flex-col justify-between">
                 <div>
-                  <label className="block text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 mb-2">
-                    <ImageIcon className="w-4 h-4 text-purple-600" />
-                    <span>تصویر پس‌زمینه صفحه ورود (Login)</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-purple-600" />
+                      <span>تصویر پس‌زمینه صفحه ورود (Login)</span>
+                    </label>
+                    {settings.login_background_url && (
+                      <span className="text-[10px] text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-950/60 px-1.5 py-0.5 rounded font-bold">
+                        طرح اختصاصی
+                      </span>
+                    )}
+                  </div>
 
                   <div className="w-full h-24 bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center p-1 overflow-hidden relative shadow-xs mb-3">
-                    {settings.login_background_url ? (
+                    {uploadingImage === "bg" ? (
+                      <div className="flex flex-col items-center justify-center text-purple-600 gap-1.5">
+                        <RefreshCw className="w-6 h-6 animate-spin" />
+                        <span className="text-[10px] font-bold">در حال ذخیره روی هاست...</span>
+                      </div>
+                    ) : settings.login_background_url ? (
                       <img
                         src={settings.login_background_url}
                         alt="پس‌زمینه صفحه ورود"
@@ -1016,13 +1214,29 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
 
                 <div className="space-y-2 text-xs">
                   <div className="flex flex-wrap items-center gap-2">
-                    <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold cursor-pointer transition shadow-xs text-xs">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>آپلود تصویر پس‌زمینه</span>
+                    <label
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white font-bold cursor-pointer transition shadow-xs text-xs ${
+                        uploadingImage === "bg"
+                          ? "bg-purple-400 cursor-not-allowed opacity-75"
+                          : "bg-purple-600 hover:bg-purple-700"
+                      }`}
+                    >
+                      {uploadingImage === "bg" ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>در حال آپلود...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>{settings.login_background_url ? "تغییر پس‌زمینه" : "آپلود تصویر پس‌زمینه"}</span>
+                        </>
+                      )}
                       <input
                         type="file"
                         accept="image/png, image/jpeg, image/webp"
                         onChange={handleLoginBgUpload}
+                        disabled={uploadingImage !== null}
                         className="hidden"
                       />
                     </label>
@@ -1031,15 +1245,16 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
                       <button
                         type="button"
                         onClick={handleRemoveLoginBg}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 font-bold transition cursor-pointer text-xs"
+                        disabled={uploadingImage !== null}
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 font-bold transition cursor-pointer text-xs disabled:opacity-50"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        <span>حذف</span>
+                        <span>بازگشت به پیش‌فرض</span>
                       </button>
                     )}
                   </div>
                   <p className="text-[10.5px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    ابعاد پیشنهادی: <strong>۱۹۲۰×۱۰۸۰ پیکسل (نسبت ۱۶:۹)</strong>، حداکثر ۳ مگابایت (JPG/PNG/WebP).
+                    ابعاد پیشنهادی: <strong>۱۹۲۰×۱۰۸۰ (نسبت ۱۶:۹)</strong>. در هاست ذخیره می‌گردد.
                   </p>
                 </div>
               </div>
@@ -1494,6 +1709,15 @@ export const SettingsAuditManager: React.FC<SettingsAuditManagerProps> = ({ init
                                   )}
                                 >
                                   {u.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                                </button>
+                              )}
+                              {!isCurrentUser && u.id !== 'usr-1' && (
+                                <button
+                                  onClick={() => handleDeleteUser(u)}
+                                  title="حذف حساب کاربری"
+                                  className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer"
+                                >
+                                  <Trash2 className="w-4 h-4" />
                                 </button>
                               )}
                             </div>

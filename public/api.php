@@ -177,7 +177,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `is_active` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`),
                 INDEX (`name`),
                 INDEX (`national_id`),
@@ -207,7 +206,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `stamp_signature_enabled` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`invoice_number`),
                 INDEX (`order_id`),
                 INDEX (`customer_id`),
@@ -237,7 +235,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_at_fa` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`order_number`),
                 INDEX (`customer_id`),
                 INDEX (`status`),
@@ -260,7 +257,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `reference_number` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`customer_id`),
                 INDEX (`transaction_date`),
                 INDEX (`type`)
@@ -281,7 +277,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `status` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`customer_id`),
                 INDEX (`payment_date`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -303,7 +298,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`cheque_number`),
                 INDEX (`customer_id`),
                 INDEX (`due_date`)
@@ -322,7 +316,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `status` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`customer_id`),
                 INDEX (`adjustment_date`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -338,7 +331,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `is_active` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`name`),
                 INDEX (`phone`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -356,7 +348,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `is_active` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`plate_number`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
@@ -383,7 +374,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`delivery_number`),
                 INDEX (`customer_id`),
                 INDEX (`delivery_date`)
@@ -408,7 +398,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`return_number`),
                 INDEX (`customer_id`),
                 INDEX (`return_date`)
@@ -426,7 +415,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `is_active` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`),
                 INDEX (`name`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -443,7 +431,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `is_active` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
@@ -466,7 +453,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`material_id`),
                 INDEX (`type`),
                 INDEX (`date`)
@@ -488,7 +474,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `status` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`),
                 INDEX (`name`),
                 INDEX (`national_id`)
@@ -509,7 +494,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`employee_id`),
                 INDEX (`date`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -528,7 +512,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `status` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`employee_id`),
                 INDEX (`from_date`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -547,7 +530,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `status` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`employee_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
@@ -567,7 +549,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`),
                 INDEX (`category`),
                 INDEX (`expense_date`)
@@ -601,7 +582,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `material_type` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`),
                 INDEX (`production_date`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -620,7 +600,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `permissions` LONGTEXT NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 UNIQUE INDEX (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
@@ -633,7 +612,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `permissions` LONGTEXT NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
         'permissions' => "
@@ -644,7 +622,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `perm_key` VARCHAR(128) NULL,
                 `category` VARCHAR(64) NULL,
                 `description` TEXT NULL,
-                `data_json` LONGTEXT NULL,
                 `updated_at` VARCHAR(64) NULL,
                 INDEX (`key`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -691,7 +668,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `default_invoice_notes` TEXT NULL,
                 `print_invoice_signatures` TINYINT(1) DEFAULT 1,
                 `timezone` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
@@ -715,7 +691,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `timestamp` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`created_at`),
                 INDEX (`user_id`),
                 INDEX (`action`)
@@ -739,7 +714,6 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `is_active` TINYINT(1) DEFAULT 1,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
-                `data_json` LONGTEXT NULL,
                 INDEX (`code`),
                 INDEX (`name`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -779,8 +753,7 @@ function ensureTablesExist(PDO $pdo, $force = false) {
             'code' => 'VARCHAR(64) NULL', 'name' => 'VARCHAR(255) NULL', 'national_id' => 'VARCHAR(64) NULL',
             'phone' => 'VARCHAR(64) NULL', 'mobile' => 'VARCHAR(64) NULL', 'economic_code' => 'VARCHAR(64) NULL',
             'address' => 'TEXT NULL', 'description' => 'TEXT NULL', 'is_active' => 'TINYINT(1) DEFAULT 1',
-            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',        ],
         'invoices' => [
             'order_id' => 'VARCHAR(64) NULL', 'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL',
             'customer_code' => 'VARCHAR(64) NULL', 'invoice_number' => 'VARCHAR(64) NULL', 'invoice_date' => 'VARCHAR(64) NULL',
@@ -788,8 +761,7 @@ function ensureTablesExist(PDO $pdo, $force = false) {
             'discount_enabled' => 'TINYINT(1) DEFAULT 0', 'discount' => 'BIGINT DEFAULT 0', 'tax_enabled' => 'TINYINT(1) DEFAULT 0',
             'tax_percent' => 'INT DEFAULT 0', 'tax_amount' => 'BIGINT DEFAULT 0', 'final_total' => 'BIGINT NULL',
             'total_amount' => 'BIGINT NULL', 'description' => 'TEXT NULL', 'stamp_signature_enabled' => 'TINYINT(1) DEFAULT 1',
-            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',        ],
         'orders' => [
             'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL', 'customer_code' => 'VARCHAR(64) NULL',
             'order_number' => 'VARCHAR(64) NULL', 'order_date' => 'VARCHAR(64) NULL', 'status' => 'VARCHAR(64) NULL',
@@ -797,33 +769,28 @@ function ensureTablesExist(PDO $pdo, $force = false) {
             'discount' => 'BIGINT DEFAULT 0', 'tax_enabled' => 'TINYINT(1) DEFAULT 0', 'tax_percent' => 'INT DEFAULT 0',
             'tax_amount' => 'BIGINT DEFAULT 0', 'final_total' => 'BIGINT NULL', 'total_amount' => 'BIGINT NULL',
             'description' => 'TEXT NULL', 'stamp_signature_enabled' => 'TINYINT(1) DEFAULT 1', 'created_at_fa' => 'VARCHAR(64) NULL',
-            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',        ],
         'transactions' => [
             'customer_id' => 'VARCHAR(64) NULL', 'transaction_date' => 'VARCHAR(64) NULL', 'date' => 'VARCHAR(64) NULL',
             'type' => 'VARCHAR(64) NULL', 'debit' => 'BIGINT DEFAULT 0', 'credit' => 'BIGINT DEFAULT 0', 'amount' => 'BIGINT DEFAULT 0',
             'description' => 'TEXT NULL', 'reference_type' => 'VARCHAR(64) NULL', 'reference_id' => 'VARCHAR(64) NULL',
             'reference_number' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',
-            'data_json' => 'LONGTEXT NULL'
         ],
         'payments' => [
             'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL', 'customer_code' => 'VARCHAR(64) NULL',
             'payment_date' => 'VARCHAR(64) NULL', 'date' => 'VARCHAR(64) NULL', 'amount' => 'BIGINT DEFAULT 0',
             'payment_method' => 'VARCHAR(64) NULL', 'description' => 'TEXT NULL', 'created_by' => 'VARCHAR(64) NULL',
             'status' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',
-            'data_json' => 'LONGTEXT NULL'
         ],
         'adjustments' => [
             'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL', 'adjustment_date' => 'VARCHAR(64) NULL',
             'amount' => 'BIGINT DEFAULT 0', 'type' => 'VARCHAR(64) NULL', 'description' => 'TEXT NULL', 'created_by' => 'VARCHAR(64) NULL',
             'status' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',
-            'data_json' => 'LONGTEXT NULL'
         ],
         'drivers' => [
             'name' => 'VARCHAR(255) NULL', 'phone' => 'VARCHAR(64) NULL', 'mobile' => 'VARCHAR(64) NULL',
             'plate_number' => 'VARCHAR(64) NULL', 'vehicle_type' => 'VARCHAR(64) NULL', 'is_active' => 'TINYINT(1) DEFAULT 1',
-            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',        ],
         'deliveries' => [
             'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL', 'customer_code' => 'VARCHAR(64) NULL',
             'delivery_number' => 'VARCHAR(64) NULL', 'doc_number' => 'VARCHAR(64) NULL', 'delivery_date' => 'VARCHAR(64) NULL',
@@ -831,30 +798,26 @@ function ensureTablesExist(PDO $pdo, $force = false) {
             'driver_name' => 'VARCHAR(255) NULL', 'driver_phone' => 'VARCHAR(64) NULL', 'vehicle_plate' => 'VARCHAR(64) NULL',
             'vehicle_type' => 'VARCHAR(64) NULL', 'status' => 'VARCHAR(64) NULL', 'items' => 'LONGTEXT NULL',
             'total_meters' => 'DOUBLE DEFAULT 0', 'description' => 'TEXT NULL', 'created_by' => 'VARCHAR(64) NULL',
-            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',        ],
         'movements' => [
             'code' => 'VARCHAR(64) NULL', 'material_id' => 'VARCHAR(64) NULL', 'material_name' => 'VARCHAR(255) NULL',
             'material_code' => 'VARCHAR(64) NULL', 'warehouse_id' => 'VARCHAR(64) NULL', 'warehouse_name' => 'VARCHAR(255) NULL',
             'type' => 'VARCHAR(64) NULL', 'quantity' => 'DOUBLE DEFAULT 0', 'bags_count' => 'INT DEFAULT 0',
             'driver_name' => 'VARCHAR(255) NULL', 'driver_phone' => 'VARCHAR(64) NULL', 'reference_type' => 'VARCHAR(64) NULL',
             'date' => 'VARCHAR(64) NULL', 'created_by' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL',
-            'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'updated_at' => 'VARCHAR(64) NULL',        ],
         'employees' => [
             'code' => 'VARCHAR(64) NULL', 'name' => 'VARCHAR(255) NULL', 'full_name' => 'VARCHAR(255) NULL',
             'national_id' => 'VARCHAR(64) NULL', 'phone1' => 'VARCHAR(64) NULL', 'phone2' => 'VARCHAR(64) NULL',
             'address' => 'TEXT NULL', 'position' => 'VARCHAR(128) NULL', 'salary_base' => 'BIGINT DEFAULT 0',
             'balance' => 'BIGINT DEFAULT 0', 'status' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL',
-            'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'updated_at' => 'VARCHAR(64) NULL',        ],
         'expenses' => [
             'code' => 'VARCHAR(64) NULL', 'doc_number' => 'VARCHAR(64) NULL', 'title' => 'VARCHAR(255) NULL',
             'category' => 'VARCHAR(64) NULL', 'amount' => 'BIGINT DEFAULT 0', 'expense_date' => 'VARCHAR(64) NULL',
             'date' => 'VARCHAR(64) NULL', 'beneficiary' => 'VARCHAR(255) NULL', 'payment_method' => 'VARCHAR(64) NULL',
             'description' => 'TEXT NULL', 'created_by' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL',
-            'updated_at' => 'VARCHAR(64) NULL', 'data_json' => 'LONGTEXT NULL'
-        ],
+            'updated_at' => 'VARCHAR(64) NULL',        ],
         'settings' => [
             'business_name' => 'VARCHAR(255) NULL', 'company_name' => 'VARCHAR(255) NULL', 'brand_subtitle' => 'VARCHAR(255) NULL',
             'logo_url' => 'LONGTEXT NULL', 'stamp_signature_url' => 'LONGTEXT NULL', 'login_cover_url' => 'LONGTEXT NULL',
@@ -863,8 +826,7 @@ function ensureTablesExist(PDO $pdo, $force = false) {
             'registration_number' => 'VARCHAR(64) NULL', 'postal_code' => 'VARCHAR(64) NULL', 'address' => 'TEXT NULL',
             'default_tax_percent' => 'INT DEFAULT 0', 'default_tax_rate' => 'DOUBLE DEFAULT 0',
             'order_prefix' => 'VARCHAR(32) NULL', 'invoice_prefix' => 'VARCHAR(32) NULL', 'customer_prefix' => 'VARCHAR(32) NULL',
-            'currency_unit' => 'VARCHAR(32) NULL', 'data_json' => 'LONGTEXT NULL'
-        ]
+            'currency_unit' => 'VARCHAR(32) NULL',        ]
     ];
 
     foreach ($requiredColumns as $t => $cols) {
@@ -880,6 +842,13 @@ function ensureTablesExist(PDO $pdo, $force = false) {
             continue;
         }
 
+        // Auto-cleanup: Drop legacy bloated data_json column from MySQL tables
+        if (isset($existingCols['data_json'])) {
+            try {
+                $pdo->exec("ALTER TABLE `$t` DROP COLUMN `data_json`");
+            } catch (Exception $eDrop) {}
+        }
+
         foreach ($cols as $colName => $colDef) {
             if (!isset($existingCols[strtolower($colName)])) {
                 try {
@@ -890,6 +859,41 @@ function ensureTablesExist(PDO $pdo, $force = false) {
     }
 
     $ensured = true;
+}
+
+// Helper to extract Base64 data and save to uploads/ directory on host
+function extractAndSaveBase64Image($dataUrl, $prefix = 'img') {
+    if (empty($dataUrl) || !is_string($dataUrl)) return $dataUrl;
+    if (strpos($dataUrl, 'data:image/') !== 0) return $dataUrl;
+    
+    $parts = explode(',', $dataUrl, 2);
+    if (count($parts) < 2) return $dataUrl;
+    
+    $mimePart = $parts[0];
+    $base64Data = $parts[1];
+    
+    $ext = 'png';
+    if (strpos($mimePart, 'image/jpeg') !== false || strpos($mimePart, 'image/jpg') !== false) {
+        $ext = 'jpg';
+    } elseif (strpos($mimePart, 'image/webp') !== false) {
+        $ext = 'webp';
+    } elseif (strpos($mimePart, 'image/svg') !== false) {
+        $ext = 'svg';
+    }
+    
+    $binary = base64_decode($base64Data);
+    if ($binary === false) return $dataUrl;
+    
+    $uploadsDir = __DIR__ . '/uploads';
+    if (!is_dir($uploadsDir)) {
+        @mkdir($uploadsDir, 0755, true);
+    }
+    
+    $filename = $prefix . '_' . substr(md5($binary), 0, 10) . '.' . $ext;
+    $filePath = $uploadsDir . '/' . $filename;
+    @file_put_contents($filePath, $binary);
+    
+    return 'uploads/' . $filename;
 }
 
 // Fallback JSON File database path
@@ -909,6 +913,136 @@ if (empty($action)) {
 $conn = getDatabaseConnection();
 
 // ----------------------------------------------------
+// UPLOAD IMAGE / FILE (Stored directly on Host uploads/ directory)
+// ----------------------------------------------------
+if ($action === 'upload_image' || $action === 'upload_file') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $uploadsDir = __DIR__ . '/uploads';
+    if (!is_dir($uploadsDir)) {
+        @mkdir($uploadsDir, 0777, true);
+        @chmod($uploadsDir, 0777);
+    }
+
+    $rawInput = @file_get_contents('php://input');
+    $payload = @json_decode($rawInput, true);
+
+    $type = !empty($payload['type']) ? trim($payload['type']) : (!empty($_POST['type']) ? trim($_POST['type']) : 'img');
+    $base64Data = !empty($payload['base64']) ? $payload['base64'] : '';
+
+    $targetName = '';
+    $finalUrl = '';
+    $saved = false;
+
+    // A) If Base64 JSON payload
+    if (!empty($base64Data)) {
+        $ext = 'png';
+        if (strpos($base64Data, 'image/jpeg') !== false || strpos($base64Data, 'image/jpg') !== false) {
+            $ext = 'jpg';
+        } elseif (strpos($base64Data, 'image/webp') !== false) {
+            $ext = 'webp';
+        } elseif (strpos($base64Data, 'image/svg') !== false) {
+            $ext = 'svg';
+        }
+
+        if ($type === 'logo') {
+            $targetName = 'logo.' . $ext;
+        } elseif ($type === 'stamp') {
+            $targetName = 'stamp_signature.png';
+        } elseif ($type === 'bg' || $type === 'cover') {
+            $targetName = 'login_bg.' . $ext;
+        } else {
+            $targetName = $type . '_' . time() . '.' . $ext;
+        }
+
+        $parts = explode(',', $base64Data, 2);
+        $binary = (count($parts) === 2) ? base64_decode($parts[1]) : base64_decode($base64Data);
+
+        if ($binary !== false) {
+            $targetPath = $uploadsDir . '/' . $targetName;
+            if (@file_put_contents($targetPath, $binary) !== false) {
+                $saved = true;
+                $finalUrl = 'uploads/' . $targetName . '?v=' . time();
+            }
+        }
+    }
+    // B) If Multipart $_FILES
+    elseif (!empty($_FILES['file']['tmp_name'])) {
+        $origName = $_FILES['file']['name'];
+        $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'])) {
+            $ext = 'png';
+        }
+
+        if ($type === 'logo') {
+            $targetName = 'logo.' . $ext;
+        } elseif ($type === 'stamp') {
+            $targetName = 'stamp_signature.png';
+        } elseif ($type === 'bg' || $type === 'cover') {
+            $targetName = 'login_bg.' . $ext;
+        } else {
+            $targetName = 'img_' . time() . '_' . substr(md5(uniqid()), 0, 6) . '.' . $ext;
+        }
+
+        $targetPath = $uploadsDir . '/' . $targetName;
+        if (@move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
+            $saved = true;
+            $finalUrl = 'uploads/' . $targetName . '?v=' . time();
+        }
+    }
+
+    if ($saved && !empty($finalUrl)) {
+        // Automatically sync new image path into MySQL settings table
+        if ($conn instanceof PDO) {
+            try {
+                if ($type === 'logo') {
+                    $st = $conn->prepare("UPDATE `settings` SET `logo_url` = ?, `updated_at` = CURRENT_TIMESTAMP WHERE `id` = 'set-1' OR `id` = '1' OR 1=1 LIMIT 1");
+                    $st->execute([$finalUrl]);
+                } elseif ($type === 'stamp') {
+                    $st = $conn->prepare("UPDATE `settings` SET `stamp_signature_url` = ?, `updated_at` = CURRENT_TIMESTAMP WHERE `id` = 'set-1' OR `id` = '1' OR 1=1 LIMIT 1");
+                    $st->execute([$finalUrl]);
+                } elseif ($type === 'bg' || $type === 'cover') {
+                    $st = $conn->prepare("UPDATE `settings` SET `login_background_url` = ?, `updated_at` = CURRENT_TIMESTAMP WHERE `id` = 'set-1' OR `id` = '1' OR 1=1 LIMIT 1");
+                    $st->execute([$finalUrl]);
+                }
+            } catch (Exception $e) {}
+        }
+
+        // Also update JSON file fallback if in file mode
+        if (file_exists($dbFile)) {
+            try {
+                $fData = @json_decode(@file_get_contents($dbFile), true);
+                if (is_array($fData) && isset($fData['settings'])) {
+                    if ($type === 'logo') $fData['settings']['logo_url'] = $finalUrl;
+                    if ($type === 'stamp') $fData['settings']['stamp_signature_url'] = $finalUrl;
+                    if ($type === 'bg' || $type === 'cover') $fData['settings']['login_background_url'] = $finalUrl;
+                    @file_put_contents($dbFile, json_encode($fData, JSON_UNESCAPED_UNICODE));
+                }
+            } catch (Exception $e) {}
+        }
+
+        echo json_encode([
+            'success' => true,
+            'url' => $finalUrl,
+            'filename' => $targetName,
+            'message' => 'تصویر با موفقیت در پوشه uploads هاست ذخیره گردید.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'خطا در دریافت و ذخیره فایل روی هاست. لطفاً دسترسی پوشه uploads را بررسی نمایید.'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// ----------------------------------------------------
 // PING / VERSION / REALTIME POLLING
 // ----------------------------------------------------
 if ($action === 'version' || $action === 'poll' || $action === 'ping') {
@@ -922,14 +1056,10 @@ if ($action === 'version' || $action === 'poll' || $action === 'ping') {
         $rev = time();
         $resetEpoch = '0';
         try {
-            $st = $conn->query("SELECT UNIX_TIMESTAMP(updated_at) as u, data_json FROM `settings` WHERE id = 1 LIMIT 1");
+            $st = $conn->query("SELECT UNIX_TIMESTAMP(updated_at) as u FROM `settings` WHERE id = 1 LIMIT 1");
             if ($st) {
                 $row = $st->fetch();
                 if (!empty($row['u'])) $rev = (int)$row['u'];
-                if (!empty($row['data_json'])) {
-                    $dec = json_decode($row['data_json'], true);
-                    if (!empty($dec['reset_epoch'])) $resetEpoch = (string)$dec['reset_epoch'];
-                }
             }
         } catch (Exception $e) {}
 
@@ -1193,27 +1323,53 @@ if ($action === 'save_settings') {
     if ($conn instanceof PDO) {
         ensureTablesExist($conn);
         try {
+            foreach (['logo_url', 'stamp_signature_url', 'login_cover_url', 'login_background_url'] as $imgKey) {
+                if (!empty($data[$imgKey])) {
+                    $data[$imgKey] = extractAndSaveBase64Image($data[$imgKey], str_replace('_url', '', $imgKey));
+                }
+            }
             $jsonStr = json_encode($data, JSON_UNESCAPED_UNICODE);
             $bizName = $data['business_name'] ?? $data['company_name'] ?? null;
             $compName = $data['company_name'] ?? $data['business_name'] ?? null;
             $phone = $data['phone'] ?? null;
             $address = $data['address'] ?? null;
 
-            $stmt = $conn->prepare("INSERT INTO `settings` (`id`, `business_name`, `company_name`, `phone`, `address`, `data_json`) 
-                VALUES (1, :bn, :cn, :ph, :ad, :dj) 
+            $stmt = $conn->prepare("INSERT INTO `settings` 
+                (`id`, `business_name`, `company_name`, `brand_subtitle`, `logo_url`, `stamp_signature_url`, `login_cover_url`, `login_background_url`, `phone`, `fax`, `email`, `economic_code`, `national_id`, `registration_number`, `postal_code`, `address`) 
+                VALUES (1, :bn, :cn, :bs, :lu, :su, :lc, :lb, :ph, :fx, :em, :ec, :ni, :rn, :pc, :ad) 
                 ON DUPLICATE KEY UPDATE 
                     `business_name` = VALUES(`business_name`),
                     `company_name` = VALUES(`company_name`),
+                    `brand_subtitle` = VALUES(`brand_subtitle`),
+                    `logo_url` = VALUES(`logo_url`),
+                    `stamp_signature_url` = VALUES(`stamp_signature_url`),
+                    `login_cover_url` = VALUES(`login_cover_url`),
+                    `login_background_url` = VALUES(`login_background_url`),
                     `phone` = VALUES(`phone`),
+                    `fax` = VALUES(`fax`),
+                    `email` = VALUES(`email`),
+                    `economic_code` = VALUES(`economic_code`),
+                    `national_id` = VALUES(`national_id`),
+                    `registration_number` = VALUES(`registration_number`),
+                    `postal_code` = VALUES(`postal_code`),
                     `address` = VALUES(`address`),
-                    `data_json` = VALUES(`data_json`),
                     `updated_at` = CURRENT_TIMESTAMP");
             $stmt->execute([
                 ':bn' => $bizName,
                 ':cn' => $compName,
+                ':bs' => $data['brand_subtitle'] ?? 'تولیدکننده تخصصی انواع لوله و اتصالات پلی‌اتیلن استاندارد',
+                ':lu' => $data['logo_url'] ?? '',
+                ':su' => $data['stamp_signature_url'] ?? '',
+                ':lc' => $data['login_cover_url'] ?? '',
+                ':lb' => $data['login_background_url'] ?? '',
                 ':ph' => $phone,
-                ':ad' => $address,
-                ':dj' => $jsonStr
+                ':fx' => $data['fax'] ?? '',
+                ':em' => $data['email'] ?? '',
+                ':ec' => $data['economic_code'] ?? '10300026420',
+                ':ni' => $data['national_id'] ?? '10300026420',
+                ':rn' => $data['registration_number'] ?? '276',
+                ':pc' => $data['postal_code'] ?? '6961912345',
+                ':ad' => $address
             ]);
 
             echo json_encode([
@@ -1245,24 +1401,78 @@ if ($action === 'backup_sql') {
         header("Content-Disposition: attachment; filename=\"{$filename}\"");
 
         echo "-- ====================================================================\n";
-        echo "-- پایگاه داده رسمی: کارخانه لوله پلی‌اتیلن البرز\n";
+        echo "-- پایگاه داده رسمی: {$compOfficialName}\n";
         echo "-- نوع پشتیبان: پشتیبان‌گیری جامع تمام سال‌ها\n";
         echo "-- زمان خروجی: " . date('c') . "\n";
         echo "-- سازگار با: MySQL 5.7+ / MySQL 8.0+ / MariaDB / phpMyAdmin\n";
         echo "-- ====================================================================\n\n";
         echo "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS = 0;\n\n";
 
-        $canonicalList = [
-            'customers', 'products', 'invoices', 'orders', 'transactions', 'payments',
-            'cheques', 'adjustments', 'drivers', 'vehicles', 'deliveries', 'returns',
-            'materials', 'warehouses', 'movements', 'employees', 'employee_txs',
-            'employee_leaves', 'employment_periods', 'expenses', 'production_logs',
-            'users', 'roles', 'permissions', 'settings', 'audit_logs'
+        $tableCanonicalCols = [
+            'customers' => ['id', 'code', 'name', 'national_id', 'phone', 'address', 'is_active', 'created_at', 'updated_at'],
+            'products' => ['id', 'code', 'name', 'size', 'pressure', 'type', 'unit', 'unit_price', 'weight_per_meter', 'stock_meters', 'description', 'is_active', 'created_at', 'updated_at'],
+            'invoices' => ['id', 'order_id', 'customer_id', 'customer_name', 'customer_code', 'invoice_number', 'invoice_date', 'status', 'items', 'subtotal', 'discount_enabled', 'discount', 'tax_enabled', 'tax_percent', 'tax_amount', 'final_total', 'description', 'stamp_signature_enabled', 'created_at', 'updated_at'],
+            'orders' => ['id', 'customer_id', 'customer_name', 'customer_code', 'order_number', 'order_date', 'status', 'items', 'subtotal', 'discount_enabled', 'discount', 'tax_enabled', 'tax_percent', 'tax_amount', 'final_total', 'description', 'stamp_signature_enabled', 'created_at', 'updated_at'],
+            'transactions' => ['id', 'customer_id', 'transaction_date', 'type', 'debit', 'credit', 'description', 'reference_type', 'reference_id', 'reference_number', 'created_at', 'updated_at'],
+            'payments' => ['id', 'customer_id', 'customer_name', 'customer_code', 'payment_date', 'amount', 'payment_method', 'description', 'created_by', 'status', 'created_at', 'updated_at'],
+            'cheques' => ['id', 'customer_id', 'customer_name', 'customer_code', 'cheque_number', 'bank_name', 'branch', 'due_date', 'amount', 'status', 'description', 'created_by', 'created_at', 'updated_at'],
+            'adjustments' => ['id', 'customer_id', 'customer_name', 'adjustment_date', 'amount', 'type', 'description', 'created_by', 'status', 'created_at', 'updated_at'],
+            'drivers' => ['id', 'name', 'phone', 'plate_number', 'vehicle_type', 'is_active', 'created_at', 'updated_at'],
+            'vehicles' => ['id', 'plate_number', 'vehicle_type', 'driver_id', 'driver_name', 'driver_phone', 'is_active', 'created_at', 'updated_at'],
+            'deliveries' => ['id', 'customer_id', 'customer_name', 'customer_code', 'delivery_number', 'delivery_date', 'driver_id', 'driver_name', 'driver_phone', 'vehicle_plate', 'vehicle_type', 'status', 'items', 'total_meters', 'description', 'created_by', 'created_at', 'updated_at'],
+            'returns' => ['id', 'customer_id', 'customer_name', 'customer_code', 'return_number', 'return_date', 'status', 'reason', 'description', 'items', 'total_meters', 'total_amount', 'created_by', 'created_at', 'updated_at'],
+            'materials' => ['id', 'name', 'code', 'category', 'unit', 'current_stock', 'min_stock_alert', 'is_active', 'created_at', 'updated_at'],
+            'warehouses' => ['id', 'name', 'code', 'location', 'manager_name', 'phone', 'description', 'is_active', 'created_at', 'updated_at'],
+            'movements' => ['id', 'code', 'material_id', 'material_name', 'material_code', 'warehouse_id', 'warehouse_name', 'type', 'quantity', 'bags_count', 'driver_name', 'driver_phone', 'reference_type', 'created_by', 'created_at', 'updated_at'],
+            'employees' => ['id', 'code', 'name', 'national_id', 'phone1', 'phone2', 'address', 'position', 'salary_base', 'balance', 'status', 'created_at', 'updated_at'],
+            'employee_txs' => ['id', 'employee_id', 'employee_name', 'employee_code', 'date', 'type', 'amount', 'payment_method', 'reference_number', 'description', 'created_by', 'created_at', 'updated_at'],
+            'employee_leaves' => ['id', 'employee_id', 'employee_name', 'employee_code', 'type', 'category', 'from_date', 'to_date', 'days_count', 'status', 'created_at', 'updated_at'],
+            'employment_periods' => ['id', 'employee_id', 'employee_name', 'start_date', 'end_date', 'contract_type', 'position', 'reason_for_leaving', 'notes', 'status', 'created_at', 'updated_at'],
+            'expenses' => ['id', 'code', 'title', 'category', 'amount', 'expense_date', 'beneficiary', 'payment_method', 'description', 'created_by', 'created_at', 'updated_at'],
+            'production_logs' => ['id', 'code', 'production_date', 'size', 'pressure', 'type', 'diameter', 'thickness', 'motor_speed', 'traction_speed', 'die_mold', 'pin_needle', 'weight_unit', 'meters', 'total_weight', 'customer_name', 'notes', 'created_at', 'pipe_size', 'meters_produced', 'weight_kg', 'material_type'],
+            'users' => ['id', 'user_code', 'name', 'username', 'password', 'role_id', 'role_name', 'is_admin', 'is_active', 'permissions', 'created_at', 'updated_at'],
+            'roles' => ['id', 'name', 'description', 'is_active', 'permissions', 'created_at', 'updated_at'],
+            'permissions' => ['id', 'name', 'key', 'category', 'description'],
+            'settings' => ['id', 'business_name', 'company_name', 'brand_subtitle', 'logo_url', 'stamp_signature_url', 'login_cover_url', 'login_background_url', 'phone', 'fax', 'email', 'economic_code', 'national_id', 'registration_number', 'postal_code', 'address', 'default_tax_percent', 'default_tax_rate', 'default_order_notes_enabled', 'default_order_notes_text', 'default_invoice_notes_enabled', 'default_invoice_notes_text', 'default_delivery_notes_enabled', 'default_delivery_notes_text', 'backup_reminder_enabled', 'backup_reminder_interval_days', 'last_backup_date', 'order_prefix', 'invoice_prefix', 'customer_prefix', 'product_prefix', 'delivery_prefix', 'return_prefix', 'material_prefix', 'currency_unit', 'print_invoice_header', 'print_invoice_footer_terms', 'default_invoice_notes', 'print_invoice_signatures', 'timezone', 'updated_at'],
+            'audit_logs' => ['id', 'user_id', 'user_code', 'user_name', 'user_role', 'action', 'action_type', 'entity_type', 'entity_id', 'document_number', 'entity_title', 'old_values', 'new_values', 'ip_address', 'user_agent', 'created_at']
         ];
 
-        foreach ($canonicalList as $tbl) {
+        // Fetch company name dynamically from settings for official header
+        $compOfficialName = 'شرکت کبیر لوله دره شهر';
+        try {
+            $cStmt = $conn->query("SELECT company_name, business_name FROM `settings` WHERE id = 1 LIMIT 1");
+            if ($cStmt) {
+                $cRow = $cStmt->fetch();
+                if (!empty($cRow['company_name'])) $compOfficialName = $cRow['company_name'];
+                elseif (!empty($cRow['business_name'])) $compOfficialName = $cRow['business_name'];
+            }
+        } catch (Exception $eComp) {}
+
+        foreach ($tableCanonicalCols as $tbl => $canonicalCols) {
             try {
-                $rowsStmt = $conn->query("SELECT * FROM `$tbl`");
+                // Discover existing columns in this table
+                $existingCols = [];
+                $colCheck = $conn->query("SHOW COLUMNS FROM `$tbl`");
+                if ($colCheck) {
+                    while ($c = $colCheck->fetch()) {
+                        $existingCols[strtolower($c['Field'])] = true;
+                    }
+                }
+
+                // Filter down to only canonical columns that actually exist (excluding data_json completely)
+                $selectedCols = [];
+                foreach ($canonicalCols as $colName) {
+                    if (isset($existingCols[strtolower($colName)])) {
+                        $selectedCols[] = $colName;
+                    }
+                }
+
+                if (empty($selectedCols)) continue;
+
+                $escapedCols = array_map(function($c) { return "`$c`"; }, $selectedCols);
+                $colsHeader = implode(', ', $escapedCols);
+
+                $rowsStmt = $conn->query("SELECT " . $colsHeader . " FROM `$tbl`");
                 if (!$rowsStmt) continue;
                 $rows = $rowsStmt->fetchAll();
                 $count = count($rows);
@@ -1273,14 +1483,10 @@ if ($action === 'backup_sql') {
                 echo "DELETE FROM `{$tbl}`;\n";
 
                 if ($count > 0) {
-                    $firstRow = $rows[0];
-                    $colNames = array_keys($firstRow);
-                    $escapedCols = array_map(function($c) { return "`$c`"; }, $colNames);
-                    $colsHeader = implode(', ', $escapedCols);
-
                     foreach ($rows as $r) {
                         $escapedVals = [];
-                        foreach ($r as $val) {
+                        foreach ($selectedCols as $colName) {
+                            $val = $r[$colName] ?? null;
                             if ($val === null) {
                                 $escapedVals[] = 'NULL';
                             } else {
@@ -1622,8 +1828,9 @@ if ($action === 'factory_reset' || $action === 'reset_factory' || $action === 'c
                     'created_at' => $nowIso,
                     'updated_at' => $nowIso
                 ], JSON_UNESCAPED_UNICODE);
-                $stmtAdmin = $conn->prepare("INSERT INTO `users` (`id`, `user_code`, `name`, `username`, `password`, `role_id`, `role_name`, `is_admin`, `is_active`, `data_json`, `created_at`, `updated_at`) VALUES ('usr-1', 'USR-1001', 'مدیر ارشد سیستم', 'admin', '123', 'role-admin', 'مدیر ارشد سیستم', 1, 1, :dj, :ca, :ua)");
-                $stmtAdmin->execute([':dj' => $defaultAdminJson, ':ca' => $nowIso, ':ua' => $nowIso]);
+                $permsJson = json_encode(['all'], JSON_UNESCAPED_UNICODE);
+                $stmtAdmin = $conn->prepare("INSERT INTO `users` (`id`, `user_code`, `name`, `username`, `password`, `role_id`, `role_name`, `is_admin`, `is_active`, `permissions`, `created_at`, `updated_at`) VALUES ('usr-1', 'USR-1001', 'مدیر ارشد سیستم', 'admin', '123', 'role-admin', 'مدیر ارشد سیستم', 1, 1, :perms, :ca, :ua)");
+                $stmtAdmin->execute([':perms' => $permsJson, ':ca' => $nowIso, ':ua' => $nowIso]);
             } catch (Exception $eAdmin) {}
 
             // 4. Clean settings record with reset epoch
@@ -1633,8 +1840,8 @@ if ($action === 'factory_reset' || $action === 'reset_factory' || $action === 'c
                     'reset_epoch' => $epoch,
                     'last_reset' => $nowIso,
                 ], JSON_UNESCAPED_UNICODE);
-                $stmtSett = $conn->prepare("INSERT INTO `settings` (`id`, `data_json`) VALUES (1, :dj)");
-                $stmtSett->execute([':dj' => $cleanSettingsJson]);
+                $stmtSett = $conn->prepare("INSERT INTO `settings` (`id`, `business_name`, `company_name`) VALUES (1, 'شرکت کبیر لوله دره شهر', 'شرکت کبیر لوله دره شهر') ON DUPLICATE KEY UPDATE `company_name` = VALUES(`company_name`)");
+                $stmtSett->execute();
             } catch (Exception $eSett) {}
 
             $conn->exec("SET FOREIGN_KEY_CHECKS = 1;");
@@ -1738,12 +1945,8 @@ if ($action === 'save_item' || $action === 'upsert_item') {
             }
 
             $id = isset($rowItem['id']) ? (string)$rowItem['id'] : (isset($rowItem['code']) ? (string)$rowItem['code'] : uniqid('rec_'));
-            $rowJson = json_encode($rowItem, JSON_UNESCAPED_UNICODE);
 
             $colsToInsert = ['id' => $id];
-            if (isset($existingCols['data_json'])) {
-                $colsToInsert['data_json'] = $rowJson;
-            }
 
             if (is_array($rowItem)) {
                 foreach ($rowItem as $k => $v) {
@@ -1769,10 +1972,16 @@ if ($action === 'save_item' || $action === 'upsert_item') {
             $s = $conn->prepare($dynSql);
             $s->execute(array_values($colsToInsert));
 
+            // Touch settings updated_at so other devices' polling detects change immediately
+            try {
+                $conn->exec("UPDATE `settings` SET `updated_at` = CURRENT_TIMESTAMP WHERE `id` = 1");
+            } catch (Exception $eRev) {}
+
             echo json_encode([
                 'success' => true,
                 'table' => $tbl,
                 'id' => $id,
+                'revision' => time(),
                 'message' => 'رکورد با موفقیت و فوری در پایگاه‌داده MySQL ثبت گردید.'
             ], JSON_UNESCAPED_UNICODE);
             exit;
@@ -1817,7 +2026,13 @@ if ($action === 'delete_item') {
         try {
             $delStmt = $conn->prepare("DELETE FROM `$tbl` WHERE `id` = ?");
             $delStmt->execute([$id]);
-            echo json_encode(['success' => true, 'table' => $tbl, 'id' => $id, 'message' => 'رکورد از پایگاه‌داده حذف شد.'], JSON_UNESCAPED_UNICODE);
+
+            // Touch settings updated_at so other devices' polling detects change immediately
+            try {
+                $conn->exec("UPDATE `settings` SET `updated_at` = CURRENT_TIMESTAMP WHERE `id` = 1");
+            } catch (Exception $eRev) {}
+
+            echo json_encode(['success' => true, 'table' => $tbl, 'id' => $id, 'revision' => time(), 'message' => 'رکورد از پایگاه‌داده حذف شد.'], JSON_UNESCAPED_UNICODE);
             exit;
         } catch (Exception $e) {
             http_response_code(500);
@@ -1872,24 +2087,9 @@ if ($action === 'load') {
                     if ($stmt) {
                         $items = [];
                         while ($row = $stmt->fetch()) {
-                            $decoded = null;
-                            if (!empty($row['data_json'])) {
-                                $decoded = json_decode($row['data_json'], true);
-                            }
-                            if ($decoded === null || !is_array($decoded)) {
-                                unset($row['data_json']);
-                                unset($row['updated_at']);
-                                $decoded = array_filter($row, function($v) { return $v !== null; });
-                            } else {
-                                // Merge relational columns on top of data_json if relational columns are newer
-                                foreach ($row as $colK => $colV) {
-                                    if ($colK !== 'data_json' && $colK !== 'updated_at' && $colV !== null) {
-                                        if (!isset($decoded[$colK]) || $decoded[$colK] === null || $decoded[$colK] === '') {
-                                            $decoded[$colK] = $colV;
-                                        }
-                                    }
-                                }
-                            }
+                            unset($row['data_json']);
+                            unset($row['updated_at']);
+                            $decoded = array_filter($row, function($v) { return $v !== null; });
 
                             if (!empty($decoded) && is_array($decoded)) {
                                 // Normalize 'items' array
@@ -1935,13 +2135,6 @@ if ($action === 'load') {
                     if ($st) {
                         $row0 = $st->fetch();
                         if ($row0) {
-                            if (!empty($row0['data_json'])) {
-                                $dec = json_decode($row0['data_json'], true);
-                                if (is_array($dec) && count($dec) > 0) {
-                                    $extractedSettings = $dec;
-                                    break;
-                                }
-                            }
                             unset($row0['data_json']);
                             unset($row0['updated_at']);
                             $cleanRow = array_filter($row0, function($v) { return $v !== null && $v !== ''; });
@@ -2050,9 +2243,10 @@ if ($action === 'save' || $action === 'restore') {
                     if ($serverCount > 0) {
                         if ($rawSett !== null) {
                             try {
-                                $settJson = json_encode($rawSett, JSON_UNESCAPED_UNICODE);
-                                $stmt2 = $conn->prepare("INSERT INTO `settings` (`id`, `data_json`) VALUES (1, :dj) ON DUPLICATE KEY UPDATE `data_json` = VALUES(`data_json`), `updated_at` = CURRENT_TIMESTAMP");
-                                $stmt2->execute([':dj' => $settJson]);
+                                $sBiz = $rawSett['business_name'] ?? $rawSett['company_name'] ?? 'شرکت کبیر لوله دره شهر';
+                                $sComp = $rawSett['company_name'] ?? $rawSett['business_name'] ?? 'شرکت کبیر لوله دره شهر';
+                                $stmt2 = $conn->prepare("UPDATE `settings` SET `business_name` = :bn, `company_name` = :cn, `updated_at` = CURRENT_TIMESTAMP WHERE id = 1");
+                                $stmt2->execute([':bn' => $sBiz, ':cn' => $sComp]);
                             } catch (Exception $e) {}
                         }
                         echo json_encode([
@@ -2143,16 +2337,15 @@ if ($action === 'save' || $action === 'restore') {
                             }
                         } catch (Exception $e) {}
 
-                        // High-speed chunked batch insert (50 rows per SQL statement)
+                        // High-speed chunked batch insert (50 rows per SQL statement) - Pure relational columns
                         $chunks = array_chunk($rows, 50);
                         foreach ($chunks as $chunk) {
                             $colsMap = ['id' => true];
-                            if (isset($existingCols['data_json'])) $colsMap['data_json'] = true;
                             foreach ($chunk as $r) {
                                 if (is_array($r)) {
                                     foreach ($r as $k => $v) {
                                         $lk = strtolower($k);
-                                        if (isset($existingCols[$lk])) $colsMap[$lk] = true;
+                                        if ($lk !== 'data_json' && isset($existingCols[$lk])) $colsMap[$lk] = true;
                                     }
                                 }
                             }
@@ -2164,14 +2357,11 @@ if ($action === 'save' || $action === 'restore') {
                             $flatValues = [];
                             foreach ($chunk as $rowItem) {
                                 $id = isset($rowItem['id']) ? (string)$rowItem['id'] : (isset($rowItem['code']) ? (string)$rowItem['code'] : uniqid('rec_'));
-                                $rowJson = json_encode($rowItem, JSON_UNESCAPED_UNICODE);
                                 $itemQMarks = [];
                                 foreach ($colNames as $col) {
                                     $itemQMarks[] = '?';
                                     if ($col === 'id') {
                                         $flatValues[] = $id;
-                                    } elseif ($col === 'data_json') {
-                                        $flatValues[] = $rowJson;
                                     } else {
                                         $v = isset($rowItem[$col]) ? $rowItem[$col] : null;
                                         if (is_array($v) || is_object($v)) {
@@ -2195,10 +2385,19 @@ if ($action === 'save' || $action === 'restore') {
                                     // Per-row fallback on error
                                     foreach ($chunk as $singleRow) {
                                         $sId = isset($singleRow['id']) ? (string)$singleRow['id'] : (isset($singleRow['code']) ? (string)$singleRow['code'] : uniqid('rec_'));
-                                        $sJson = json_encode($singleRow, JSON_UNESCAPED_UNICODE);
                                         try {
-                                            $fb = $conn->prepare("INSERT INTO `$tbl` (`id`, `data_json`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `data_json` = VALUES(`data_json`)");
-                                            $fb->execute([$sId, $sJson]);
+                                            $sCols = ['id'];
+                                            $sVals = [$sId];
+                                            foreach ($colNames as $c) {
+                                                if ($c !== 'id' && isset($singleRow[$c])) {
+                                                    $sCols[] = $c;
+                                                    $valC = $singleRow[$c];
+                                                    $sVals[] = (is_array($valC) || is_object($valC)) ? json_encode($valC, JSON_UNESCAPED_UNICODE) : (is_bool($valC) ? ($valC ? 1 : 0) : $valC);
+                                                }
+                                            }
+                                            $fbSql = "INSERT INTO `$tbl` (" . implode(',', array_map(function($x) { return "`$x`"; }, $sCols)) . ") VALUES (" . implode(',', array_fill(0, count($sCols), '?')) . ") ON DUPLICATE KEY UPDATE `id` = VALUES(`id`)";
+                                            $fb = $conn->prepare($fbSql);
+                                            $fb->execute($sVals);
                                         } catch (Exception $e2) {}
                                     }
                                 }
@@ -2210,12 +2409,34 @@ if ($action === 'save' || $action === 'restore') {
 
             // Save Settings in canonical settings table
             if ($rawSett !== null) {
-                $settJson = json_encode($rawSett, JSON_UNESCAPED_UNICODE);
+                foreach (['logo_url', 'stamp_signature_url', 'login_cover_url', 'login_background_url'] as $imgKey) {
+                    if (!empty($rawSett[$imgKey])) {
+                        $rawSett[$imgKey] = extractAndSaveBase64Image($rawSett[$imgKey], str_replace('_url', '', $imgKey));
+                    }
+                }
                 try {
-                    $stmt2 = $conn->prepare("INSERT INTO `settings` (`id`, `data_json`) 
-                        VALUES (1, :data_json) 
-                        ON DUPLICATE KEY UPDATE `data_json` = VALUES(`data_json`), `updated_at` = CURRENT_TIMESTAMP");
-                    $stmt2->execute([':data_json' => $settJson]);
+                    $bizName = $rawSett['business_name'] ?? $rawSett['company_name'] ?? 'شرکت کبیر لوله دره شهر';
+                    $compName = $rawSett['company_name'] ?? $rawSett['business_name'] ?? 'شرکت کبیر لوله دره شهر';
+                    $stmt2 = $conn->prepare("REPLACE INTO `settings` 
+                        (`id`, `business_name`, `company_name`, `brand_subtitle`, `logo_url`, `stamp_signature_url`, `login_cover_url`, `login_background_url`, `phone`, `fax`, `email`, `economic_code`, `national_id`, `registration_number`, `postal_code`, `address`)
+                        VALUES (1, :bn, :cn, :bs, :lu, :su, :lc, :lb, :ph, :fx, :em, :ec, :ni, :rn, :pc, :ad)");
+                    $stmt2->execute([
+                        ':bn' => $bizName,
+                        ':cn' => $compName,
+                        ':bs' => $rawSett['brand_subtitle'] ?? 'تولیدکننده تخصصی انواع لوله و اتصالات پلی‌اتیلن استاندارد',
+                        ':lu' => $rawSett['logo_url'] ?? '',
+                        ':su' => $rawSett['stamp_signature_url'] ?? '',
+                        ':lc' => $rawSett['login_cover_url'] ?? '',
+                        ':lb' => $rawSett['login_background_url'] ?? '',
+                        ':ph' => $rawSett['phone'] ?? '09188421867',
+                        ':fx' => $rawSett['fax'] ?? '',
+                        ':em' => $rawSett['email'] ?? '',
+                        ':ec' => $rawSett['economic_code'] ?? '10300026420',
+                        ':ni' => $rawSett['national_id'] ?? '10300026420',
+                        ':rn' => $rawSett['registration_number'] ?? '276',
+                        ':pc' => $rawSett['postal_code'] ?? '6961912345',
+                        ':ad' => $rawSett['address'] ?? 'ایلام، دره شهر، شهرک صنعتی'
+                    ]);
                 } catch (Exception $e) {}
             }
 

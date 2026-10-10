@@ -92,7 +92,7 @@ export const ProductionFilterReport: React.FC<ProductionFilterReportProps> = ({
       const eTime = new Date(endDate).getTime();
       if (!isNaN(pTime) && !isNaN(eTime) && pTime > eTime) return false;
     }
-    const mtrs = typeof log.meters === 'number' ? log.meters : typeof log.meters_produced === 'number' ? log.meters_produced : 0;
+    const mtrs = Number(log.meters !== undefined && log.meters !== null ? log.meters : (log.meters_produced || 0)) || 0;
     if (minMeters && Number(minMeters) > 0 && mtrs < Number(minMeters)) {
       return false;
     }
@@ -103,11 +103,11 @@ export const ProductionFilterReport: React.FC<ProductionFilterReportProps> = ({
   });
 
   const totalMetersProduced = filtered.reduce(
-    (s, l) => s + (typeof l.meters === 'number' ? l.meters : typeof l.meters_produced === 'number' ? l.meters_produced : 0),
+    (s, l) => s + (Number(l.meters !== undefined && l.meters !== null ? l.meters : (l.meters_produced || 0)) || 0),
     0
   );
   const totalWeightKg = filtered.reduce(
-    (s, l) => s + (typeof l.total_weight === 'number' ? l.total_weight : typeof l.weight_kg === 'number' ? l.weight_kg : 0),
+    (s, l) => s + (Number(l.total_weight !== undefined && l.total_weight !== null ? l.total_weight : (l.weight_kg || 0)) || 0),
     0
   );
 
@@ -349,11 +349,11 @@ const ProductionPrintModal: React.FC<{
   if (!isOpen) return null;
 
   const totalMetersProduced = logs.reduce(
-    (s, l) => s + (typeof l.meters === 'number' ? l.meters : typeof l.meters_produced === 'number' ? l.meters_produced : 0),
+    (s, l) => s + (Number(l.meters !== undefined && l.meters !== null ? l.meters : (l.meters_produced || 0)) || 0),
     0
   );
   const totalWeightKg = logs.reduce(
-    (s, l) => s + (typeof l.total_weight === 'number' ? l.total_weight : typeof l.weight_kg === 'number' ? l.weight_kg : 0),
+    (s, l) => s + (Number(l.total_weight !== undefined && l.total_weight !== null ? l.total_weight : (l.weight_kg || 0)) || 0),
     0
   );
 
@@ -419,8 +419,10 @@ const ProductionPrintModal: React.FC<{
                   </tr>
                 ) : (
                   logs.map((l, idx) => {
-                    const mtrs = typeof l.meters === 'number' ? l.meters : typeof l.meters_produced === 'number' ? l.meters_produced : 0;
-                    const wTotal = typeof l.total_weight === 'number' ? l.total_weight : typeof l.weight_kg === 'number' ? l.weight_kg : 0;
+                    const mtrs = Number(l.meters !== undefined && l.meters !== null ? l.meters : (l.meters_produced || 0)) || 0;
+                    const wTotal = Number(l.total_weight !== undefined && l.total_weight !== null ? l.total_weight : (l.weight_kg || 0)) || 0;
+                    const rawWUnit = l.weight_unit !== undefined && l.weight_unit !== null ? l.weight_unit : (l.weight_kg && mtrs ? Number(l.weight_kg) / Number(mtrs) : 0);
+                    const wUnit = typeof rawWUnit === 'number' ? rawWUnit : (parseFloat(String(rawWUnit)) || 0);
                     return (
                       <tr key={l.id} className="hover:bg-slate-50">
                         <td className="p-1 border-l border-slate-300 font-bold">{toPersianDigits(idx + 1)}</td>
@@ -433,7 +435,7 @@ const ProductionPrintModal: React.FC<{
                           <div>دای: {l.die_mold || '—'}</div>
                           <div>پین: {l.pin_needle || '—'}</div>
                         </td>
-                        <td className="p-1 border-l border-slate-300 font-mono">{l.weight_unit ? `${toPersianDigits(l.weight_unit)} kg` : '—'}</td>
+                        <td className="p-1 border-l border-slate-300 font-mono">{wUnit > 0 ? `${toPersianDigits(wUnit.toFixed(3))} kg` : '—'}</td>
                         <td className="p-1 border-l border-slate-300 font-bold font-mono text-blue-800">
                           {formatNumber(mtrs)} متر
                         </td>

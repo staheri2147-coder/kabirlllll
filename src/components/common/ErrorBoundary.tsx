@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RotateCcw, LogOut, Trash2 } from 'lucide-react';
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
+  title?: string;
+  onReset?: () => void;
+  inline?: boolean;
 }
 
 interface State {
@@ -10,8 +13,7 @@ interface State {
   error: Error | null;
 }
 
-export class ErrorBoundary extends React.Component<Props, State> {
-  props: Props;
+export class ErrorBoundary extends Component<Props, State> {
   state: State = {
     hasError: false,
     error: null,
@@ -19,7 +21,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.props = props;
   }
 
   static getDerivedStateFromError(error: Error): State {
@@ -31,7 +32,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   handleReload = () => {
-    window.location.reload();
+    if (this.props.onReset) {
+      this.setState({ hasError: false, error: null });
+      this.props.onReset();
+    } else {
+      window.location.reload();
+    }
   };
 
   handleHardReset = () => {
@@ -59,6 +65,39 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      if (this.props.inline) {
+        return (
+          <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm text-center my-4 space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 mx-auto flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                {this.props.title || 'اختلال در نمایش این بخش'}
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                یک خطای موقت در پردازش داده‌های این صفحه رخ داده است.
+              </p>
+            </div>
+            {this.state.error?.message && (
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-rose-500 dir-ltr text-left overflow-auto max-h-20">
+                {this.state.error.message}
+              </div>
+            )}
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={this.handleReload}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>تلاش مجدد</span>
+              </button>
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-100 font-['Vazirmatn',sans-serif] select-none text-center">
           <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">

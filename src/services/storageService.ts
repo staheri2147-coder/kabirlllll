@@ -65,21 +65,21 @@ const STORAGE_KEYS = {
 // Initial Default Settings
 const defaultSettings: SystemSettings = {
   id: 'set-1',
-  business_name: 'شرکت تولیدی لوله پلی‌اتیلن البرز پایپ',
-  company_name: 'شرکت تولیدی لوله پلی‌اتیلن البرز پایپ',
+  business_name: 'شرکت کبیر لوله دره شهر',
+  company_name: 'شرکت کبیر لوله دره شهر',
   brand_subtitle: 'تولید کننده انواع لوله های پلی اتیلن',
-  logo_url: '',
-  stamp_signature_url: '',
+  logo_url: 'uploads/logo.jpg',
+  stamp_signature_url: 'uploads/stamp_signature.png',
   login_cover_url: '',
   login_background_url: '',
-  phone: '۰۲۱-۸۸۸۸۷۷۶۶',
-  fax: '۰۲۱-۸۸۸۸۷۷۶۷',
-  email: 'info@alborzpipe.ir',
-  economic_code: '۴۱۱۵۶۷۸۹۱۲۳۴',
-  national_id: '۱۰۱۰۲۵۶۳۹۸۴',
-  registration_number: '۴۵۲۱۸',
-  postal_code: '۱۹۸۷۶۵۴۳۲۱',
-  address: 'تهران، خیابان ولیعصر، برج سپهر، طبقه ۸، واحد ۳',
+  phone: '09181410327',
+  fax: '',
+  email: '',
+  economic_code: '10300026420',
+  national_id: '10300026420',
+  registration_number: '403',
+  postal_code: '6964139003',
+  address: 'ایلام - شهرستان دره شهر - روستای جهاد آباد',
   default_tax_percent: 10,
   default_tax_rate: 10,
   
@@ -310,10 +310,16 @@ export function normalizeSettingsObject(raw: any, fallback?: SystemSettings): Sy
   const brand_subtitle = rawSubtitle !== undefined ? String(rawSubtitle) : base.brand_subtitle;
 
   const rawLogo = getProp(['logo_url', 'logoUrl', 'logo', 'logo_image', 'logoImage', 'company_logo']);
-  const logo_url = rawLogo !== undefined ? String(rawLogo) : base.logo_url;
+  let logo_url = rawLogo !== undefined ? String(rawLogo) : base.logo_url;
+  if (logo_url && logo_url.startsWith('data:image/') && logo_url.length > 30000) {
+    logo_url = 'uploads/logo.jpg';
+  }
 
   const rawStamp = getProp(['stamp_signature_url', 'stampSignatureUrl', 'stamp_url', 'stampUrl', 'signature_url', 'signatureUrl', 'stamp_image']);
-  const stamp_signature_url = rawStamp !== undefined ? String(rawStamp) : base.stamp_signature_url;
+  let stamp_signature_url = rawStamp !== undefined ? String(rawStamp) : base.stamp_signature_url;
+  if (stamp_signature_url && stamp_signature_url.startsWith('data:image/') && stamp_signature_url.length > 30000) {
+    stamp_signature_url = 'uploads/stamp_signature.png';
+  }
 
   const rawLoginCover = getProp(['login_cover_url', 'loginCoverUrl', 'cover_url', 'coverUrl', 'login_cover']);
   const login_cover_url = rawLoginCover !== undefined ? String(rawLoginCover) : base.login_cover_url;
@@ -581,7 +587,7 @@ const defaultUsers: User[] = [
   {
     id: 'usr-1',
     user_code: 'USR-1001',
-    name: 'مهندس حسینی (مدیر ارشد)',
+    name: 'مدیر ارشد سیستم',
     username: 'admin',
     password: '123',
     role_id: 'role-admin',
@@ -589,48 +595,6 @@ const defaultUsers: User[] = [
     is_admin: true,
     is_active: true,
     permissions: defaultPermissions.map((p) => p.key),
-    created_at: '2026-08-20T08:00:00Z',
-    updated_at: '2026-08-20T08:00:00Z',
-  },
-  {
-    id: 'usr-2',
-    user_code: 'USR-1002',
-    name: 'خانم رضایی (حسابدار)',
-    username: 'accountant',
-    password: '123',
-    role_id: 'role-accountant',
-    role_name: 'حسابدار ارشد',
-    is_admin: false,
-    is_active: true,
-    permissions: defaultRoles[1].permissions,
-    created_at: '2026-08-20T08:00:00Z',
-    updated_at: '2026-08-20T08:00:00Z',
-  },
-  {
-    id: 'usr-3',
-    user_code: 'USR-1003',
-    name: 'آقای صادقی (مسئول فروش)',
-    username: 'sales',
-    password: '123',
-    role_id: 'role-sales',
-    role_name: 'کارشناس فروش',
-    is_admin: false,
-    is_active: true,
-    permissions: defaultRoles[2].permissions,
-    created_at: '2026-08-20T08:00:00Z',
-    updated_at: '2026-08-20T08:00:00Z',
-  },
-  {
-    id: 'usr-4',
-    user_code: 'USR-1004',
-    name: 'آقای کریمی (انباردار و بارگیری)',
-    username: 'warehouse',
-    password: '123',
-    role_id: 'role-logistics',
-    role_name: 'مسئول بارگیری و انبار',
-    is_admin: false,
-    is_active: true,
-    permissions: defaultRoles[3].permissions,
     created_at: '2026-08-20T08:00:00Z',
     updated_at: '2026-08-20T08:00:00Z',
   },
@@ -764,7 +728,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function scheduleAutoSyncToHost(delayMs = 40) {
+function scheduleAutoSyncToHost(delayMs = 1500) {
   if (typeof window === 'undefined' || typeof fetch !== 'function') return;
   if (syncDebounceTimer) {
     clearTimeout(syncDebounceTimer);
@@ -809,7 +773,7 @@ function writeStorage<T>(key: string, value: T, immediate = false): void {
     if (!isRestoringFromRemote && BUSINESS_DATA_KEYS.has(key)) {
       lastWriteTimestamp = Date.now();
       markLocalChangePending();
-      scheduleAutoSyncToHost(immediate ? 0 : 40);
+      scheduleAutoSyncToHost(immediate ? 0 : 1500);
     }
   } catch (err) {
     console.error(`Error writing ${key} to storage:`, err);
@@ -818,7 +782,11 @@ function writeStorage<T>(key: string, value: T, immediate = false): void {
 
 // Helper to ensure all lists default to newest items first
 function sortByNewestEntities<T>(items: T[], dateKey?: string): T[] {
+  if (!Array.isArray(items)) return [];
   return [...items].sort((a: any, b: any) => {
+    if (!a && !b) return 0;
+    if (!a) return 1;
+    if (!b) return -1;
     const dateA = (dateKey && a[dateKey]) || a.created_at || a.expense_date || a.payment_date || a.due_date || a.delivery_date || a.invoice_date || a.order_date || a.return_date || a.production_date || a.start_date || a.date;
     const dateB = (dateKey && b[dateKey]) || b.created_at || b.expense_date || b.payment_date || b.due_date || b.delivery_date || b.invoice_date || b.order_date || b.return_date || b.production_date || b.start_date || b.date;
     const tA = dateA ? new Date(dateA).getTime() : 0;
@@ -895,6 +863,17 @@ export class StorageService {
       }
       if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
         writeStorage(STORAGE_KEYS.USERS, defaultUsers);
+      } else {
+        // Prune legacy dummy demo users usr-2, usr-3, usr-4 if still present
+        try {
+          const currentUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+          if (Array.isArray(currentUsers)) {
+            const pruned = currentUsers.filter((u) => u.id !== 'usr-2' && u.id !== 'usr-3' && u.id !== 'usr-4');
+            if (pruned.length !== currentUsers.length) {
+              writeStorage(STORAGE_KEYS.USERS, pruned.length > 0 ? pruned : defaultUsers);
+            }
+          }
+        } catch {}
       }
       if (!localStorage.getItem(STORAGE_KEYS.ROLES)) {
         writeStorage(STORAGE_KEYS.ROLES, defaultRoles);
@@ -907,6 +886,30 @@ export class StorageService {
       }
       if (!localStorage.getItem(STORAGE_KEYS.SETTINGS)) {
         writeStorage(STORAGE_KEYS.SETTINGS, defaultSettings);
+      } else {
+        // Upgrade legacy default company name to Kabir Looleh Darreh Shahr
+        try {
+          const currentSettings = JSON.parse(localStorage.getItem(STORAGE_KEYS.SETTINGS) || '{}');
+          if (
+            currentSettings &&
+            (currentSettings.business_name === 'شرکت تولیدی لوله پلی‌اتیلن البرز پایپ' ||
+              !currentSettings.business_name ||
+              currentSettings.business_name === '')
+          ) {
+            const upgraded = {
+              ...currentSettings,
+              business_name: 'شرکت کبیر لوله دره شهر',
+              company_name: 'شرکت کبیر لوله دره شهر',
+              national_id: '10300026420',
+              economic_code: '10300026420',
+              registration_number: '403',
+              phone: '09181410327',
+              address: 'ایلام - شهرستان دره شهر - روستای جهاد آباد',
+              postal_code: '6964139003',
+            };
+            writeStorage(STORAGE_KEYS.SETTINGS, upgraded);
+          }
+        } catch {}
       }
       if (!localStorage.getItem(STORAGE_KEYS.ACTIVE_USER_ID)) {
         writeStorage(STORAGE_KEYS.ACTIVE_USER_ID, 'usr-1');
@@ -1295,6 +1298,92 @@ export class StorageService {
     this.saveSettingsToHost(merged).catch(() => {});
   }
 
+  // Upload image file directly to host uploads/ directory (saved on host filesystem, returns static URL)
+  static async uploadImage(file: File, type: 'logo' | 'stamp' | 'cover' | 'bg'): Promise<{ success: boolean; url: string; message?: string }> {
+    try {
+      // 1. Read file and optimize dimension if excessively large
+      const base64Data: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const rawResult = evt.target?.result as string;
+          // SVG doesn't need canvas resizing
+          if (file.type.includes('svg')) {
+            resolve(rawResult);
+            return;
+          }
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = type === 'bg' ? 1920 : 800;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, w, h);
+              // Stamp should retain PNG transparency
+              const mime = (type === 'stamp' || file.type.includes('png')) ? 'image/png' : 'image/jpeg';
+              const quality = mime === 'image/jpeg' ? 0.88 : undefined;
+              resolve(canvas.toDataURL(mime, quality));
+            } else {
+              resolve(rawResult);
+            }
+          };
+          img.onerror = () => resolve(rawResult);
+          img.src = rawResult;
+        };
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
+
+      // 2. Send base64 payload to host api.php to write into uploads/ folder
+      const url = this.getApiUrl(`api.php?action=upload_image&_t=${Date.now()}`);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          base64: base64Data,
+          filename: file.name,
+        }),
+      });
+
+      const rawText = await res.text();
+      let data: any = null;
+      try {
+        data = JSON.parse(rawText);
+      } catch (jsonErr) {
+        return { success: false, url: '', message: `پاسخ سرور نامعتبر بود: ${rawText.substring(0, 80)}` };
+      }
+
+      if (res.ok && data && data.success && data.url) {
+        return { success: true, url: data.url, message: data.message || 'فایل با موفقیت روی هاست ذخیره شد.' };
+      }
+
+      return {
+        success: false,
+        url: '',
+        message: data?.message || `خطا در ذخیره‌سازی روی هاست (کد وضعیت: ${res.status})`,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        url: '',
+        message: `خطای شبکه در هنگام آپلود: ${err?.message || 'عدم دسترسی به هاست'}`,
+      };
+    }
+  }
+
   // Targeted instant save for system_settings to MySQL without touching other tables
   static async saveSettingsToHost(customSettings?: SystemSettings): Promise<{ success: boolean; message: string }> {
     const current = customSettings || this.getSettings();
@@ -1371,7 +1460,7 @@ export class StorageService {
     return readStorage<Customer[]>(STORAGE_KEYS.CUSTOMERS, defaultCustomers);
   }
 
-  static saveCustomers(customers: Customer[], immediate = true): void {
+  static saveCustomers(customers: Customer[], immediate = false): void {
     writeStorage(STORAGE_KEYS.CUSTOMERS, customers, immediate);
   }
 
@@ -1419,7 +1508,7 @@ export class StorageService {
     return sortByNewestEntities(safeList, 'order_date');
   }
 
-  static saveOrders(orders: Order[], immediate = true): void {
+  static saveOrders(orders: Order[], immediate = false): void {
     const safeList = Array.isArray(orders) ? orders.map((o) => normalizeEntityWithItems(o)) : [];
     writeStorage(STORAGE_KEYS.ORDERS, safeList, immediate);
   }
@@ -1445,7 +1534,7 @@ export class StorageService {
     return sortByNewestEntities(safeList, 'invoice_date');
   }
 
-  static saveInvoices(invoices: Invoice[], immediate = true): void {
+  static saveInvoices(invoices: Invoice[], immediate = false): void {
     const safeList = Array.isArray(invoices) ? invoices.map((i) => normalizeEntityWithItems(i)) : [];
     writeStorage(STORAGE_KEYS.INVOICES, safeList, immediate);
   }
@@ -1469,7 +1558,7 @@ export class StorageService {
     return sortByNewestEntities(readStorage<CustomerTransaction[]>(STORAGE_KEYS.TRANSACTIONS, defaultTransactions), 'created_at');
   }
 
-  static saveTransactions(transactions: CustomerTransaction[], immediate = true): void {
+  static saveTransactions(transactions: CustomerTransaction[], immediate = false): void {
     writeStorage(STORAGE_KEYS.TRANSACTIONS, transactions, immediate);
   }
 
@@ -1478,7 +1567,7 @@ export class StorageService {
     return sortByNewestEntities(readStorage<Payment[]>(STORAGE_KEYS.PAYMENTS, defaultPayments), 'payment_date');
   }
 
-  static savePayments(payments: Payment[], immediate = true): void {
+  static savePayments(payments: Payment[], immediate = false): void {
     writeStorage(STORAGE_KEYS.PAYMENTS, payments, immediate);
   }
 
@@ -2021,7 +2110,9 @@ export class StorageService {
 
   // Production Logs
   static getProductionLogs(): ProductionLog[] {
-    return sortByNewestEntities(readStorage<ProductionLog[]>(STORAGE_KEYS.PRODUCTION_LOGS, defaultProductionLogs), 'production_date');
+    const raw = readStorage<ProductionLog[]>(STORAGE_KEYS.PRODUCTION_LOGS, defaultProductionLogs);
+    const valid = Array.isArray(raw) ? raw : defaultProductionLogs;
+    return sortByNewestEntities(valid, 'production_date');
   }
 
   static saveProductionLogs(logs: ProductionLog[]): void {
@@ -2246,7 +2337,13 @@ export class StorageService {
 
   // Users & Roles
   static getUsers(): User[] {
-    const users = readStorage<User[]>(STORAGE_KEYS.USERS, defaultUsers);
+    const rawUsers = readStorage<User[]>(STORAGE_KEYS.USERS, defaultUsers);
+    // Guarantee only the admin user and explicitly added custom users exist:
+    // Filter out legacy dummy/demo users (usr-2, usr-3, usr-4)
+    const validUsers = Array.isArray(rawUsers)
+      ? rawUsers.filter((u) => u.id !== 'usr-2' && u.id !== 'usr-3' && u.id !== 'usr-4')
+      : defaultUsers;
+    const users = validUsers.length > 0 ? validUsers : defaultUsers;
     const allPermKeys = defaultPermissions.map((p) => p.key);
 
     return users.map((u, idx) => {
@@ -2360,10 +2457,18 @@ export class StorageService {
   }
 
   static deleteUser(userId: string): { success: boolean; message: string } {
-    return {
-      success: false,
-      message: 'جهت حفظ یکپارچگی اسناد مالی، فاکتورها و سوابق ثبت‌شده در سامانه، حذف فیزیکی کاربران امکان‌پذیر نمی‌باشد. لطفاً حساب کاربری را غیرفعال نمایید.',
-    };
+    if (userId === 'usr-1') {
+      return { success: false, message: 'حساب کاربری مدیر ارشد سیستم غیرقابل حذف است.' };
+    }
+    const activeUser = this.getActiveUser();
+    if (activeUser && activeUser.id === userId) {
+      return { success: false, message: 'شما نمی‌توانید حساب کاربری که هم‌اکنون با آن وارد سیستم هستید را حذف نمایید.' };
+    }
+    const currentUsers = this.getUsers().filter((u) => u.id !== userId);
+    writeStorage(STORAGE_KEYS.USERS, currentUsers.length > 0 ? currentUsers : defaultUsers);
+    this.notifyUserChanged();
+    this.logAudit('حذف حساب کاربر', 'USER', userId);
+    return { success: true, message: 'حساب کاربری با موفقیت حذف گردید.' };
   }
 
   static setUserActive(userId: string, isActive: boolean): { success: boolean; message: string } {
@@ -2736,7 +2841,7 @@ export class StorageService {
       },
     };
 
-    return JSON.stringify(backupData, null, 2);
+    return JSON.stringify(backupData);
   }
 
   // Helper to extract Jalali Year from date string
@@ -3400,34 +3505,15 @@ export class StorageService {
   static generateSqlDump(filteredFiscalYear?: number): string {
     const timestamp = new Date().toISOString();
     const settings = this.getSettings();
-    const companyName = settings.company_name || 'کارخانه لوله پلی‌اتیلن البرز';
+    const companyName = settings.company_name || 'شرکت کبیر لوله دره شهر';
     const fiscalNote = filteredFiscalYear ? `بایگانی سال مالی ${filteredFiscalYear}` : 'پشتیبان‌گیری جامع تمام سال‌ها';
 
     const escapeSql = (val: any): string => {
       if (val === null || val === undefined) return 'NULL';
       if (typeof val === 'number') return isNaN(val) ? '0' : String(val);
       if (typeof val === 'boolean') return val ? '1' : '0';
-      if (typeof val === 'object') {
-        const jsonStr = JSON.stringify(val);
-        return `'${jsonStr.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (char) => {
-          switch (char) {
-            case "\0": return "\\0";
-            case "\x08": return "\\b";
-            case "\x09": return "\\t";
-            case "\x1a": return "\\z";
-            case "\n": return "\\n";
-            case "\r": return "\\r";
-            case "\"":
-            case "'":
-            case "\\":
-            case "%":
-              return "\\" + char;
-            default:
-              return char;
-          }
-        })}'`;
-      }
-      return `'${String(val).replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (char) => {
+      const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+      return `'${str.replace(/[\0\x08\x09\x1a\n\r"'\\]/g, (char) => {
         switch (char) {
           case "\0": return "\\0";
           case "\x08": return "\\b";
@@ -3435,13 +3521,9 @@ export class StorageService {
           case "\x1a": return "\\z";
           case "\n": return "\\n";
           case "\r": return "\\r";
-          case "\"":
-          case "'":
-          case "\\":
-          case "%":
-            return "\\" + char;
-          default:
-            return char;
+          case "'": return "\\'";
+          case "\\": return "\\\\";
+          default: return char;
         }
       })}'`;
     };
@@ -3564,11 +3646,8 @@ export class StorageService {
       const dbTable = targetDbTableName[name] || name;
       const schemaKey = targetDbTableName[name] || name;
       sql += `-- -----------------------------------------------------\n`;
-      sql += `-- ساختار و داده‌های جدول \`${dbTable}\` (تعداد رکورد: ${items ? items.length : 0})\n`;
+      sql += `-- پاک‌سازی و داده‌های جدول \`${dbTable}\` (تعداد رکورد: ${items ? items.length : 0})\n`;
       sql += `-- -----------------------------------------------------\n`;
-      if (tableSchemas[schemaKey]) {
-        sql += tableSchemas[schemaKey] + `\n\n`;
-      }
       sql += `DELETE FROM \`${dbTable}\`;\n`;
       if (!items || items.length === 0) return;
 
@@ -4585,8 +4664,10 @@ export class StorageService {
 
     activePushPromise = (async () => {
       let finalResult = { success: false, message: '' };
+      let attempts = 0;
 
-      while (true) {
+      while (attempts < 2) {
+        attempts++;
         pushQueued = false;
         const snapshotTimestamp = Date.now();
         const fullJson = this.exportFullBackup();
@@ -4601,7 +4682,7 @@ export class StorageService {
           const actionName = force ? 'restore' : 'save';
           const url = this.getApiUrl(`api.php?action=${actionName}&_t=${Date.now()}`);
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 35000);
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
           const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -4616,9 +4697,8 @@ export class StorageService {
           try {
             data = JSON.parse(rawText);
           } catch (jsonErr) {
-            // Strip HTML tags from PHP error messages to make them readable
             const cleanErr = rawText.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-            throw new Error(`پاسخ سرور نامعتبر بود: ${cleanErr.substring(0, 180)}`);
+            throw new Error(`پاسخ سرور نامعتبر بود: ${cleanErr.substring(0, 150)}`);
           }
 
           if (!res.ok) {
@@ -4630,12 +4710,6 @@ export class StorageService {
               lastKnownServerRevision = Number(data.revision);
             }
 
-            // If new writes arrived WHILE this network request was in progress,
-            // or if another push was queued, loop again immediately to push latest data!
-            if (lastWriteTimestamp > snapshotTimestamp || pushQueued) {
-              continue;
-            }
-
             clearLocalChangePending();
             const timeStr = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             notifySyncListeners({
@@ -4644,6 +4718,11 @@ export class StorageService {
               message: data.message || 'تمام اطلاعات در دیتابیس MySQL هاست ذخیره گردید.',
             });
             finalResult = { success: true, message: data.message || 'ذخیره در هاست انجام شد.' };
+
+            if (pushQueued && attempts < 2) {
+              await new Promise((r) => setTimeout(r, 800));
+              continue;
+            }
             break;
           } else {
             notifySyncListeners({
@@ -4690,6 +4769,12 @@ export class StorageService {
     if (isServerReset && typeof localStorage !== 'undefined') {
       localStorage.setItem(DB_RESET_EPOCH_KEY, remoteResetEpoch);
       clearLocalChangePending();
+      // Wipe all business keys from localStorage so zero ghost records survive
+      Object.values(STORAGE_KEYS).forEach((k) => {
+        if (k !== DB_RESET_EPOCH_KEY && k !== STORAGE_KEYS.AUTH_SESSION && k !== STORAGE_KEYS.REMEMBERED_USERNAME) {
+          localStorage.removeItem(k);
+        }
+      });
     }
 
     isRestoringFromRemote = true;
@@ -4813,7 +4898,13 @@ export class StorageService {
       const url = this.getApiUrl(`api.php?action=load&_t=${Date.now()}`);
       const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) return { success: false, message: 'پاسخ ناموفق از هاست.' };
-      const data = await res.json();
+      let data: any = null;
+      try {
+        const rawText = await res.text();
+        data = JSON.parse(rawText);
+      } catch {
+        return { success: false, message: 'پاسخ نامعتبر از سرور' };
+      }
       if (data && data.success && data.data) {
         if (data.revision) {
           lastKnownServerRevision = Number(data.revision);
@@ -4861,17 +4952,15 @@ export class StorageService {
       if (!navigator.onLine) return;
       if (activePushPromise) return;
 
-      // If pending changes exist, try flushing them
-      if (hasLocalChangePending()) {
-        await StorageService.pushToHost(false).catch(() => {});
-        return;
-      }
-
       try {
         const url = StorageService.getApiUrl(`api.php?action=version&_t=${Date.now()}`);
         const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
-          const data = await res.json();
+          let data: any = null;
+          try {
+            const rawText = await res.text();
+            data = JSON.parse(rawText);
+          } catch {}
           if (data && data.success) {
             const remoteRev = Number(data.revision || 0);
             const remoteRows = Number(data.total_rows || 0);
@@ -4879,16 +4968,24 @@ export class StorageService {
             const localResetEpoch = typeof localStorage !== 'undefined' ? (localStorage.getItem('alborz_db_reset_epoch') || '0') : '0';
             const resetDetected = remoteResetEpoch !== '0' && remoteResetEpoch !== localResetEpoch;
 
-            if (lastKnownServerRevision === 0 || resetDetected) {
-              lastKnownServerRevision = remoteRev;
-              lastKnownServerRows = remoteRows;
-              if (resetDetected) {
-                await StorageService.pullFromHost();
-              }
-            } else if (remoteRev > lastKnownServerRevision || remoteRows !== lastKnownServerRows) {
+            if (resetDetected) {
               lastKnownServerRevision = remoteRev;
               lastKnownServerRows = remoteRows;
               await StorageService.pullFromHost();
+              return;
+            }
+
+            if (remoteRev > lastKnownServerRevision || remoteRows !== lastKnownServerRows) {
+              // Server has newer data: PULL FIRST! NEVER overwrite with local stale cache!
+              lastKnownServerRevision = remoteRev;
+              lastKnownServerRows = remoteRows;
+              await StorageService.pullFromHost();
+              return;
+            }
+
+            // Only flush local pending changes if server is already in sync and not ahead
+            if (hasLocalChangePending()) {
+              await StorageService.pushToHost(false).catch(() => {});
             }
           }
         }
@@ -4932,7 +5029,19 @@ export class StorageService {
         this.startBackgroundRealtimePolling();
         return;
       }
-      const json = await res.json();
+      let json: any = null;
+      try {
+        const rawText = await res.text();
+        json = JSON.parse(rawText);
+      } catch {
+        notifySyncListeners({
+          ...currentSyncState,
+          state: 'offline',
+          message: 'عدم دریافت پاسخ معتبر از سرور دیتابیس (استفاده از نسخه محلی)',
+        });
+        this.startBackgroundRealtimePolling();
+        return;
+      }
 
       if (json && json.success && json.data) {
         if (json.revision) {

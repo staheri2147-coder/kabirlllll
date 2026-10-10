@@ -20,6 +20,7 @@ import { EmployeeManager } from './components/Employees/EmployeeManager';
 import { ExpenseManager } from './components/Expenses/ExpenseManager';
 import { ProductionManager } from './components/Production/ProductionManager';
 import { SettingsAuditManager } from './components/Settings/SettingsAuditManager';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { GlobalBackupBanner } from './components/common/GlobalBackupBanner';
 import { VoiceAssistantModal } from './components/common/VoiceAssistantModal';
 import { VoiceCommandResult } from './services/voiceService';
@@ -153,7 +154,7 @@ export default function App() {
     };
 
     const handleFocusOrVisibilitySync = () => {
-      // When user returns to tab, pull updates if not actively editing
+      // When user returns to tab, check if server has updates without full blind pull
       if (isUserEditingForm()) return;
       StorageService.pullFromHost().then((res) => {
         if (res.applied) {
@@ -169,39 +170,17 @@ export default function App() {
     window.addEventListener('focus', handleFocusOrVisibilitySync);
     document.addEventListener('visibilitychange', handleFocusOrVisibilitySync);
 
-    // Periodic background sync at a smooth, non-disruptive rate (6s)
-    const syncInterval = setInterval(() => {
-      if (document.hidden || isUserEditingForm() || activeTab === 'new_order') return;
-      StorageService.pullFromHost().then((res) => {
-        if (res.applied) {
-          updateCounts();
-        }
-      }).catch(() => {});
-    }, 6000);
-
     return () => {
       window.removeEventListener('user-permissions-changed', handlePermissionsChanged);
       window.removeEventListener('polyethylene-db-synced', handleDbSynced);
       window.removeEventListener('polyethylene-settings-changed', handleDbSynced);
       window.removeEventListener('focus', handleFocusOrVisibilitySync);
       document.removeEventListener('visibilitychange', handleFocusOrVisibilitySync);
-      clearInterval(syncInterval);
       unsubSync();
     };
-  }, [activeTab]);
+  }, []);
 
-  // Synchronize with database on every tab/page change
-  useEffect(() => {
-    if (isAuthenticated) {
-      StorageService.pullFromHost()
-        .then(() => {
-          updateCounts();
-          setCompanySettings(StorageService.getCompanySettings());
-        })
-        .catch(() => {});
-    }
-  }, [activeTab, isAuthenticated]);
-
+  // Update counts on tab change from local cache
   useEffect(() => {
     if (isAuthenticated) {
       updateCounts();
@@ -592,7 +571,11 @@ export default function App() {
                   />
                 )}
 
-                {activeTab === 'production' && <ProductionManager />}
+                {activeTab === 'production' && (
+                  <ErrorBoundary inline title="مدیریت خط تولید">
+                    <ProductionManager />
+                  </ErrorBoundary>
+                )}
 
                 {(activeTab === 'settings' || activeTab === 'audit_logs' || activeTab === 'users') && (
                   <SettingsAuditManager

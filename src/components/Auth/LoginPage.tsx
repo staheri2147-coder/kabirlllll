@@ -57,6 +57,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   useEffect(() => {
     setSettings(StorageService.getSettings());
 
+    const handleSettingsChanged = () => {
+      setSettings(StorageService.getSettings());
+    };
+    window.addEventListener("polyethylene-settings-changed", handleSettingsChanged);
+    window.addEventListener("polyethylene-db-synced", handleSettingsChanged);
+
     const updateClock = () => {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, "0");
@@ -67,7 +73,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
     updateClock();
     const interval = setInterval(updateClock, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("polyethylene-settings-changed", handleSettingsChanged);
+      window.removeEventListener("polyethylene-db-synced", handleSettingsChanged);
+    };
   }, []);
 
   const toggleTheme = () => {
