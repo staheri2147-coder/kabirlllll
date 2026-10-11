@@ -325,6 +325,10 @@ export const EmployeeDetailView: React.FC<EmployeeDetailViewProps> = ({
     if (!canManageLeaves) return;
     if (!window.confirm('آیا از حذف این رکورد مرخصی اطمینان دارید؟')) return;
     StorageService.deleteEmployeeLeave(leaveId);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+    }
+    StorageService.pushToHost().catch(() => {});
     loadData();
   };
 
@@ -333,6 +337,10 @@ export const EmployeeDetailView: React.FC<EmployeeDetailViewProps> = ({
     if (!window.confirm('آیا از حذف این سند مالی اطمینان دارید؟ مانده حساب کارمند اصلاح خواهد شد.'))
       return;
     StorageService.deleteEmployeeTransaction(txId);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+    }
+    StorageService.pushToHost().catch(() => {});
     loadData();
   };
 
@@ -340,6 +348,10 @@ export const EmployeeDetailView: React.FC<EmployeeDetailViewProps> = ({
     if (!canManagePeriods) return;
     if (!window.confirm('آیا از حذف این دوره همکاری اطمینان دارید؟')) return;
     StorageService.deleteEmploymentPeriod(periodId);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+    }
+    StorageService.pushToHost().catch(() => {});
     loadData();
   };
 
@@ -353,6 +365,10 @@ export const EmployeeDetailView: React.FC<EmployeeDetailViewProps> = ({
       endPeriodForm.reason,
       endPeriodForm.notes
     );
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+    }
+    StorageService.pushToHost().catch(() => {});
     setShowEndPeriodModal(false);
     loadData();
   };
@@ -1127,6 +1143,10 @@ export const EmployeeDetailView: React.FC<EmployeeDetailViewProps> = ({
           }}
           onSaved={(savedPeriod) => {
             StorageService.saveEmploymentPeriod(savedPeriod);
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+            }
+            StorageService.pushToHost().catch(() => {});
             setShowPeriodModal(false);
             setEditingPeriod(null);
             loadData();

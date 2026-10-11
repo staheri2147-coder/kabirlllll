@@ -40,7 +40,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
     amount: 0,
     expense_date: getTodayISO(),
     beneficiary: '',
-    payment_method: 'transfer' as 'cash' | 'pos' | 'transfer' | 'cheque',
+    payment_method: 'transfer' as 'cash' | 'pos' | 'transfer' | 'cheque' | 'card',
     reference_number: '',
     description: '',
   });
@@ -255,8 +255,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                 <SortableHeader
                   label="کد سند"
                   sortKey="code"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                   className="w-28"
@@ -264,16 +263,14 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                 <SortableHeader
                   label="عنوان هزینه و شرح"
                   sortKey="title"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="تاریخ ثبت"
                   sortKey="expense_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                   className="w-28"
@@ -281,16 +278,14 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                 <SortableHeader
                   label="طرف حساب / ذینفع"
                   sortKey="beneficiary"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="مبلغ (ریال)"
                   sortKey="amount"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                   className="w-36 font-bold"

@@ -61,13 +61,17 @@ export interface Order {
   subtotal: number; // جمع مبالغ اقلام
   discount_enabled: boolean;
   discount: number; // مبلغ تخفیف (ریال)
+  discount_amount?: number;
   tax_enabled: boolean;
   tax_percent: number; // درصد مالیات
   tax_amount: number; // مبلغ مالیات (ریال)
+  vat_amount?: number;
   final_total: number; // جمع کل و قابل پرداخت
   notes_enabled?: boolean;
   description?: string; // توضیحات
   stamp_signature_enabled?: boolean; // درج مهر و امضا
+  invoice_id?: string;
+  shipping_address?: string;
   created_at: string;
   updated_at: string;
 }
@@ -110,6 +114,7 @@ export interface Invoice {
   tax_enabled: boolean;
   tax_percent: number;
   tax_amount: number;
+  tax?: number; // alias
   final_total: number;
   notes_enabled?: boolean;
   description?: string;
@@ -135,7 +140,7 @@ export interface CustomerTransaction {
   updated_at: string;
 }
 
-export type PaymentMethod = 'cash' | 'card' | 'bank_transfer' | 'cheque' | 'other';
+export type PaymentMethod = 'cash' | 'card' | 'bank_transfer' | 'transfer' | 'pos' | 'cheque' | 'other';
 export type PaymentStatus = 'completed' | 'cancelled';
 
 export interface Payment {
@@ -149,6 +154,7 @@ export interface Payment {
   reference_number?: string; // شماره پیگیری / ارجاع
   description?: string;
   cheque_id?: string;
+  cheque_number?: string;
   created_by: string;
   updated_by?: string;
   status: PaymentStatus;
@@ -156,18 +162,20 @@ export interface Payment {
   updated_at: string;
 }
 
-export type ChequeStatus = 'pending' | 'deposited' | 'cleared' | 'returned' | 'cancelled';
+export type ChequeStatus = 'pending' | 'deposited' | 'cleared' | 'returned' | 'cancelled' | 'passed' | 'rejected';
 
 export interface Cheque {
   id: string;
   payment_id?: string;
   customer_id: string;
   customer_name: string;
+  customer_code?: string;
   cheque_number: string;
   bank_name: string;
   due_date: string; // تاریخ سررسید
   amount: number;
   status: ChequeStatus;
+  drawer_name?: string;
   description?: string;
   created_at: string;
   updated_at: string;
@@ -179,6 +187,7 @@ export interface Adjustment {
   id: string;
   customer_id: string;
   customer_name: string;
+  customer_code?: string;
   adjustment_date: string;
   amount: number; // همیشه مثبت
   type: AdjustmentType;
@@ -247,12 +256,14 @@ export interface DeliveryNote {
   vehicle_id?: string;
   vehicle_plate?: string;
   vehicle_type?: string;
+  vehicle_info?: string;
   destination_address?: string;
   cancel_reason?: string;
   status: DeliveryStatus;
   items: DeliveryItem[];
   total_meters: number;
   description?: string;
+  received_by_customer?: boolean;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -288,6 +299,7 @@ export interface ReturnDoc {
   reason: string;
   description?: string;
   items: ReturnItem[];
+  total_meters?: number;
   total_amount: number;
   created_by: string;
   created_at: string;
@@ -394,7 +406,7 @@ export interface Expense {
   amount: number; // ریال
   expense_date: string; // ISO date
   beneficiary?: string; // دریافت‌کننده وجه
-  payment_method: 'cash' | 'transfer' | 'cheque' | 'card';
+  payment_method: 'cash' | 'transfer' | 'cheque' | 'card' | 'pos';
   reference_number?: string;
   description?: string;
   created_by: string;
@@ -418,6 +430,10 @@ export interface Material {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  stock_kg?: number;
+  min_alert_kg?: number;
+  average_cost?: number;
+  type?: string;
 }
 
 export type MovementType = 'in' | 'out' | 'adjustment' | 'return_in' | 'waste';
@@ -475,7 +491,10 @@ export interface ProductionLog {
   notes?: string; // توضیحات
   created_at: string;
   // اختیاری جهت سازگاری با متدهای قبلی
+  date?: string;
   line_number?: string;
+  line_name?: string;
+  product_name?: string;
   pipe_size?: string;
   material_type?: string;
   meters_produced?: number;
@@ -483,6 +502,7 @@ export interface ProductionLog {
   waste_kg?: number;
   shift?: string;
   operator?: string;
+  operator_name?: string;
 }
 
 export interface Warehouse {
@@ -544,6 +564,7 @@ export interface AuditLog {
   old_values?: any;
   new_values?: any;
   changes_summary?: string;
+  details?: any;
   ip_address: string;
   user_agent: string;
   created_at: string;
@@ -613,6 +634,8 @@ export interface CustomerAccountSummary {
   total_credit: number;
   balance: number; // total_debit - total_credit
   status: CustomerStatus; // debit > 0: 'debit' | < 0: 'credit' | = 0: 'settled'
+  current_balance?: number; // alias
+  balance_status?: CustomerStatus; // alias
   last_transaction_date?: string;
   active_invoices_count: number;
   pending_delivery_meters: number;

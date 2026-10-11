@@ -646,8 +646,7 @@ export const DeliveryManager: React.FC<DeliveryManagerProps> = ({
                   <SortableHeader
                     label="شماره حواله"
                     sortKey="delivery_number"
-                    currentSortKey={delSortKey}
-                    sortOrder={delSortOrder}
+                    currentSort={delSortKey ? { key: delSortKey, direction: delSortOrder } : null}
                     onSort={handleDelSort}
                     className="w-28 text-center"
                     align="center"
@@ -655,8 +654,7 @@ export const DeliveryManager: React.FC<DeliveryManagerProps> = ({
                   <SortableHeader
                     label="مشتری"
                     sortKey="customer_name"
-                    currentSortKey={delSortKey}
-                    sortOrder={delSortOrder}
+                    currentSort={delSortKey ? { key: delSortKey, direction: delSortOrder } : null}
                     onSort={handleDelSort}
                     className="text-center"
                     align="center"
@@ -664,8 +662,7 @@ export const DeliveryManager: React.FC<DeliveryManagerProps> = ({
                   <SortableHeader
                     label="تاریخ تحویل"
                     sortKey="delivery_date"
-                    currentSortKey={delSortKey}
-                    sortOrder={delSortOrder}
+                    currentSort={delSortKey ? { key: delSortKey, direction: delSortOrder } : null}
                     onSort={handleDelSort}
                     className="w-28 text-center"
                     align="center"

@@ -93,14 +93,54 @@ export const ReturnManager: React.FC<ReturnManagerProps> = ({
     }
 
     const items = DeliveryReturnService.getCustomerDeliveredItemsForReturn(customerId, excludeReturnId);
+    const availableItemsToMatch = [...(existingItems || [])];
+
     setEligibleItems(
       items.map((item) => {
-        const existing = existingItems?.find(
-          (ex) => ex.invoice_id === item.invoice_id && ex.product_id === item.product_id
-        );
+        let matchIdx = -1;
+
+        // 1. Exact match by invoice_item_id
+        if (item.invoice_item_id) {
+          matchIdx = availableItemsToMatch.findIndex(
+            (ex) => ex.invoice_item_id && ex.invoice_item_id === item.invoice_item_id
+          );
+        }
+
+        // 2. Match by invoice_id AND product_name / spec / code
+        if (matchIdx === -1) {
+          matchIdx = availableItemsToMatch.findIndex((ex) => {
+            if (ex.invoice_id !== item.invoice_id) return false;
+            if (item.product_name && ex.product_name && item.product_name.trim().toLowerCase() === ex.product_name.trim().toLowerCase()) return true;
+            if (item.product_spec && ex.product_spec && item.product_spec.trim().toLowerCase() === ex.product_spec.trim().toLowerCase()) return true;
+            if (item.product_code && ex.product_code && item.product_code === ex.product_code) return true;
+            if (item.product_id && ex.product_id && item.product_id !== 'prd-custom' && item.product_id === ex.product_id) return true;
+            return false;
+          });
+        }
+
+        // 3. Match by invoice_id and unit price
+        if (matchIdx === -1) {
+          matchIdx = availableItemsToMatch.findIndex(
+            (ex) => ex.invoice_id === item.invoice_id && ex.unit_price === item.unit_price
+          );
+        }
+
+        // 4. Fallback by invoice_id
+        if (matchIdx === -1) {
+          matchIdx = availableItemsToMatch.findIndex(
+            (ex) => ex.invoice_id === item.invoice_id
+          );
+        }
+
+        let existing: any = null;
+        if (matchIdx !== -1) {
+          existing = availableItemsToMatch[matchIdx];
+          availableItemsToMatch.splice(matchIdx, 1); // CRITICAL: Consume so subsequent rows don't duplicate
+        }
 
         return {
           invoice_id: item.invoice_id,
+          invoice_item_id: item.invoice_item_id,
           invoice_number: item.invoice_number,
           product_id: item.product_id,
           product_name: item.product_name,
@@ -216,7 +256,11 @@ export const ReturnManager: React.FC<ReturnManagerProps> = ({
           description: description.trim() || undefined,
           items: selectedToReturn.map((it) => ({
             invoice_id: it.invoice_id,
+            invoice_item_id: it.invoice_item_id,
             product_id: it.product_id,
+            product_name: it.product_name,
+            product_code: it.product_code,
+            product_spec: it.product_spec,
             quantity_meters: it.return_now_meters,
             unit_price: it.unit_price,
           })),
@@ -236,7 +280,11 @@ export const ReturnManager: React.FC<ReturnManagerProps> = ({
           description: description.trim() || undefined,
           items: selectedToReturn.map((it) => ({
             invoice_id: it.invoice_id,
+            invoice_item_id: it.invoice_item_id,
             product_id: it.product_id,
+            product_name: it.product_name,
+            product_code: it.product_code,
+            product_spec: it.product_spec,
             quantity_meters: it.return_now_meters,
             unit_price: it.unit_price,
           })),
@@ -402,24 +450,21 @@ export const ReturnManager: React.FC<ReturnManagerProps> = ({
                 <SortableHeader
                   label="شماره سند برگشت"
                   sortKey="return_number"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="مشتری"
                   sortKey="customer_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="تاریخ برگشت"
                   sortKey="return_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
@@ -428,16 +473,14 @@ export const ReturnManager: React.FC<ReturnManagerProps> = ({
                 <SortableHeader
                   label="مجموع متراژ"
                   sortKey="total_meters"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="مبلغ بستانکاری (ریال)"
                   sortKey="total_amount"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />

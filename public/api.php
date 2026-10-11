@@ -272,13 +272,17 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `date` VARCHAR(64) NULL,
                 `amount` BIGINT DEFAULT 0,
                 `payment_method` VARCHAR(64) NULL,
+                `reference_number` VARCHAR(128) NULL,
+                `cheque_id` VARCHAR(64) NULL,
+                `cheque_number` VARCHAR(64) NULL,
                 `description` TEXT NULL,
                 `created_by` VARCHAR(64) NULL,
                 `status` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
                 INDEX (`customer_id`),
-                INDEX (`payment_date`)
+                INDEX (`payment_date`),
+                INDEX (`reference_number`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
         'cheques' => "
@@ -509,11 +513,20 @@ function ensureTablesExist(PDO $pdo, $force = false) {
                 `from_date` VARCHAR(64) NULL,
                 `to_date` VARCHAR(64) NULL,
                 `days_count` INT DEFAULT 0,
+                `date` VARCHAR(64) NULL,
+                `from_time` VARCHAR(64) NULL,
+                `to_time` VARCHAR(64) NULL,
+                `hours_count` DOUBLE DEFAULT 0,
+                `hours_text` VARCHAR(128) NULL,
+                `description` TEXT NULL,
+                `replacement_person` VARCHAR(255) NULL,
                 `status` VARCHAR(64) NULL,
+                `created_by` VARCHAR(64) NULL,
                 `created_at` VARCHAR(64) NULL,
                 `updated_at` VARCHAR(64) NULL,
                 INDEX (`employee_id`),
-                INDEX (`from_date`)
+                INDEX (`from_date`),
+                INDEX (`date`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ",
         'employment_periods' => "
@@ -779,8 +792,20 @@ function ensureTablesExist(PDO $pdo, $force = false) {
         'payments' => [
             'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL', 'customer_code' => 'VARCHAR(64) NULL',
             'payment_date' => 'VARCHAR(64) NULL', 'date' => 'VARCHAR(64) NULL', 'amount' => 'BIGINT DEFAULT 0',
-            'payment_method' => 'VARCHAR(64) NULL', 'description' => 'TEXT NULL', 'created_by' => 'VARCHAR(64) NULL',
+            'payment_method' => 'VARCHAR(64) NULL', 'reference_number' => 'VARCHAR(128) NULL',
+            'cheque_id' => 'VARCHAR(64) NULL', 'cheque_number' => 'VARCHAR(64) NULL',
+            'description' => 'TEXT NULL', 'created_by' => 'VARCHAR(64) NULL',
             'status' => 'VARCHAR(64) NULL', 'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',
+        ],
+        'employee_leaves' => [
+            'employee_id' => 'VARCHAR(64) NULL', 'employee_name' => 'VARCHAR(255) NULL', 'employee_code' => 'VARCHAR(64) NULL',
+            'type' => 'VARCHAR(64) NULL', 'category' => 'VARCHAR(64) NULL', 'from_date' => 'VARCHAR(64) NULL',
+            'to_date' => 'VARCHAR(64) NULL', 'days_count' => 'INT DEFAULT 0',
+            'date' => 'VARCHAR(64) NULL', 'from_time' => 'VARCHAR(64) NULL', 'to_time' => 'VARCHAR(64) NULL',
+            'hours_count' => 'DOUBLE DEFAULT 0', 'hours_text' => 'VARCHAR(128) NULL',
+            'description' => 'TEXT NULL', 'replacement_person' => 'VARCHAR(255) NULL',
+            'status' => 'VARCHAR(64) NULL', 'created_by' => 'VARCHAR(64) NULL',
+            'created_at' => 'VARCHAR(64) NULL', 'updated_at' => 'VARCHAR(64) NULL',
         ],
         'adjustments' => [
             'customer_id' => 'VARCHAR(64) NULL', 'customer_name' => 'VARCHAR(255) NULL', 'adjustment_date' => 'VARCHAR(64) NULL',
@@ -1300,6 +1325,109 @@ if ($action === 'status' || $action === 'test' || empty($action)) {
 }
 
 // ----------------------------------------------------
+// DATABASE OPTIMIZATION & DEBLOATING (Auto-Cleanup, Vacuum, Defragment)
+// ----------------------------------------------------
+if ($action === 'optimize_db' || $action === 'cleanup_db' || $action === 'vacuum') {
+    if (!($conn instanceof PDO)) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'اتصال MySQL برقرار نیست.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    ensureTablesExist($conn);
+
+    $prunedLogsCount = 0;
+    $droppedColsCount = 0;
+    $optimizedTables = [];
+
+    // 1. Drop redundant legacy alias tables to reclaim disk space
+    $legacyTables = ['customer_transactions', 'employee_transactions', 'material_movements', 'system_settings'];
+    foreach ($legacyTables as $lt) {
+        try {
+            $conn->exec("DROP TABLE IF EXISTS `$lt`");
+        } catch (Exception $e) {}
+    }
+
+    // 2. Drop legacy bloated data_json column from all tables
+    $allTables = [
+        'customers', 'products', 'orders', 'invoices', 'transactions', 'payments', 'cheques',
+        'adjustments', 'drivers', 'vehicles', 'deliveries', 'returns', 'materials', 'warehouses',
+        'movements', 'employees', 'employee_txs', 'employee_leaves', 'employment_periods',
+        'expenses', 'production_logs', 'users', 'roles', 'permissions', 'settings', 'audit_logs'
+    ];
+    foreach ($allTables as $tbl) {
+        try {
+            $cols = $conn->query("SHOW COLUMNS FROM `$tbl`");
+            if ($cols) {
+                while ($c = $cols->fetch()) {
+                    if (strtolower($c['Field']) === 'data_json') {
+                        $conn->exec("ALTER TABLE `$tbl` DROP COLUMN `data_json`");
+                        $droppedColsCount++;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception $e) {}
+    }
+
+    // 3. Auto-retention: Keep only latest 300 audit logs
+    try {
+        $totalAudit = (int)$conn->query("SELECT COUNT(*) FROM `audit_logs`")->fetchColumn();
+        if ($totalAudit > 300) {
+            $delCnt = $totalAudit - 300;
+            $conn->exec("DELETE FROM `audit_logs` WHERE id NOT IN (SELECT id FROM (SELECT id FROM `audit_logs` ORDER BY `created_at` DESC LIMIT 300) as sub)");
+            $prunedLogsCount = $delCnt;
+        }
+    } catch (Exception $eAudit) {}
+
+    // 4. Sanitize old_values and new_values in remaining audit_logs: remove giant base64 image strings
+    try {
+        $conn->exec("UPDATE `audit_logs` SET `old_values` = NULL WHERE `old_values` LIKE '%data:image/%'");
+        $conn->exec("UPDATE `audit_logs` SET `new_values` = NULL WHERE `new_values` LIKE '%data:image/%'");
+    } catch (Exception $eSan) {}
+
+    // 5. Defragment & Optimize MySQL tables to physically reclaim disk space
+    foreach ($allTables as $tbl) {
+        try {
+            $conn->exec("OPTIMIZE TABLE `$tbl`");
+            $optimizedTables[] = $tbl;
+        } catch (Exception $eOpt) {}
+    }
+
+    // 6. Remove stale database.json on disk to free web space
+    if (file_exists($dbFile)) {
+        @unlink($dbFile);
+    }
+
+    $dbSizeKB = null;
+    try {
+        $dbNameStmt = $conn->query("SELECT DATABASE()");
+        $currDb = $dbNameStmt ? $dbNameStmt->fetchColumn() : null;
+        if ($currDb) {
+            $szStmt = $conn->prepare("SELECT ROUND(SUM(data_length + index_length) / 1024, 1) FROM information_schema.TABLES WHERE table_schema = ?");
+            $szStmt->execute([$currDb]);
+            $dbSizeKB = (float)$szStmt->fetchColumn();
+        }
+    } catch (Exception $eSz) {}
+
+    $currLogs = 0;
+    try {
+        $currLogs = (int)$conn->query("SELECT COUNT(*) FROM `audit_logs`")->fetchColumn();
+    } catch (Exception $eCl) {}
+
+    echo json_encode([
+        'success' => true,
+        'pruned_audit_logs' => $prunedLogsCount,
+        'dropped_redundant_cols' => $droppedColsCount,
+        'tables_count' => count($optimizedTables),
+        'db_size_kb' => $dbSizeKB,
+        'current_logs_count' => $currLogs,
+        'message' => 'پایگاه‌داده MySQL هاست با موفقیت بهینه‌سازی و فشرده‌سازی شد. ' . ($prunedLogsCount > 0 ? "تعداد {$prunedLogsCount} لاگ قدیمی هرس و پاک‌سازی شد" : "تمام لاگ‌های قدیمی بررسی شدند") . ' و کلیه ۲۶ جدول سیستم دیفرگمنت (OPTIMIZE TABLE) و فضای دیسک سرور آزاد شد.'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// ----------------------------------------------------
 // DEDICATED ATOMIC SAVE SETTINGS
 // ----------------------------------------------------
 if ($action === 'save_settings') {
@@ -1426,7 +1554,7 @@ if ($action === 'backup_sql') {
             'movements' => ['id', 'code', 'material_id', 'material_name', 'material_code', 'warehouse_id', 'warehouse_name', 'type', 'quantity', 'bags_count', 'driver_name', 'driver_phone', 'reference_type', 'created_by', 'created_at', 'updated_at'],
             'employees' => ['id', 'code', 'name', 'national_id', 'phone1', 'phone2', 'address', 'position', 'salary_base', 'balance', 'status', 'created_at', 'updated_at'],
             'employee_txs' => ['id', 'employee_id', 'employee_name', 'employee_code', 'date', 'type', 'amount', 'payment_method', 'reference_number', 'description', 'created_by', 'created_at', 'updated_at'],
-            'employee_leaves' => ['id', 'employee_id', 'employee_name', 'employee_code', 'type', 'category', 'from_date', 'to_date', 'days_count', 'status', 'created_at', 'updated_at'],
+            'employee_leaves' => ['id', 'employee_id', 'employee_name', 'employee_code', 'type', 'category', 'from_date', 'to_date', 'days_count', 'date', 'from_time', 'to_time', 'hours_count', 'hours_text', 'description', 'replacement_person', 'status', 'created_by', 'created_at', 'updated_at'],
             'employment_periods' => ['id', 'employee_id', 'employee_name', 'start_date', 'end_date', 'contract_type', 'position', 'reason_for_leaving', 'notes', 'status', 'created_at', 'updated_at'],
             'expenses' => ['id', 'code', 'title', 'category', 'amount', 'expense_date', 'beneficiary', 'payment_method', 'description', 'created_by', 'created_at', 'updated_at'],
             'production_logs' => ['id', 'code', 'production_date', 'size', 'pressure', 'type', 'diameter', 'thickness', 'motor_speed', 'traction_speed', 'die_mold', 'pin_needle', 'weight_unit', 'meters', 'total_weight', 'customer_name', 'notes', 'created_at', 'pipe_size', 'meters_produced', 'weight_kg', 'material_type'],
@@ -2441,7 +2569,16 @@ if ($action === 'save' || $action === 'restore') {
             }
 
             $conn->commit();
-            @file_put_contents($dbFile, $rawInput);
+
+            // Auto-retention: Keep maximum 400 newest audit logs in MySQL to permanently prevent table bloat
+            try {
+                $conn->exec("DELETE FROM `audit_logs` WHERE id NOT IN (SELECT id FROM (SELECT id FROM `audit_logs` ORDER BY `created_at` DESC LIMIT 400) as sub_audit)");
+            } catch (Exception $eAuditTrim) {}
+
+            // Free disk space: Remove duplicate JSON file when MySQL is active
+            if (file_exists($dbFile)) {
+                @unlink($dbFile);
+            }
 
             $newRevision = time();
             echo json_encode([

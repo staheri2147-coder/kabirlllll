@@ -286,16 +286,14 @@ export const ChequeManager: React.FC = () => {
                 <SortableHeader
                   label="مشتری"
                   sortKey="customer_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="شماره چک صیادی"
                   sortKey="cheque_number"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
@@ -303,16 +301,14 @@ export const ChequeManager: React.FC = () => {
                 <SortableHeader
                   label="تاریخ سررسید"
                   sortKey="due_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="مبلغ چک (تومان)"
                   sortKey="amount"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
@@ -320,8 +316,7 @@ export const ChequeManager: React.FC = () => {
                 <SortableHeader
                   label="وضعیت"
                   sortKey="status"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />

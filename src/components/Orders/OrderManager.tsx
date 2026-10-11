@@ -516,8 +516,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({
                 <SortableHeader
                   label="شماره سفارش"
                   sortKey="order_number"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   className="w-24 text-center"
                   align="center"
@@ -525,8 +524,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({
                 <SortableHeader
                   label="مشتری"
                   sortKey="customer_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   className="min-w-[130px] text-center"
                   align="center"
@@ -534,8 +532,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({
                 <SortableHeader
                   label="تاریخ ثبت"
                   sortKey="order_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   className="w-24 text-center"
                   align="center"
@@ -544,8 +541,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({
                 <SortableHeader
                   label="مبلغ نهایی (ریال)"
                   sortKey="final_total"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   className="w-32 sm:w-36 text-center"
                   align="center"
@@ -553,8 +549,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({
                 <SortableHeader
                   label="وضعیت"
                   sortKey="status"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   className="w-36 min-w-[130px] text-center"
                   align="center"

@@ -55,6 +55,7 @@ import {
 
 interface CustomerManagerProps {
   initialCustomerId?: string;
+  onNavigate?: (tab: string, extraData?: any, subTab?: 'company' | 'users' | 'backup' | 'audit') => void;
   onOpenOrderForCustomer?: (customerId: string) => void;
   onOpenPaymentForCustomer?: (customerId: string) => void;
   onOpenAdjustmentForCustomer?: (customerId: string) => void;
@@ -64,6 +65,7 @@ interface CustomerManagerProps {
 
 export const CustomerManager: React.FC<CustomerManagerProps> = ({
   initialCustomerId,
+  onNavigate,
   onOpenOrderForCustomer,
   onOpenPaymentForCustomer,
   onOpenAdjustmentForCustomer,
@@ -660,8 +662,7 @@ export const CustomerManager: React.FC<CustomerManagerProps> = ({
                     <SortableHeader
                       label="کد مشتری"
                       sortKey="code"
-                      currentSortKey={sortKey}
-                      sortOrder={sortOrder}
+                      currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                       onSort={handleSort}
                       align="center"
                       className="w-24"
@@ -669,8 +670,7 @@ export const CustomerManager: React.FC<CustomerManagerProps> = ({
                     <SortableHeader
                       label="نام شخص / شرکت"
                       sortKey="name"
-                      currentSortKey={sortKey}
-                      sortOrder={sortOrder}
+                      currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                       onSort={handleSort}
                       align="center"
                     />
@@ -678,32 +678,28 @@ export const CustomerManager: React.FC<CustomerManagerProps> = ({
                     <SortableHeader
                       label="کل بدهکار (ریال)"
                       sortKey="total_debit"
-                      currentSortKey={sortKey}
-                      sortOrder={sortOrder}
+                      currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                       onSort={handleSort}
                       align="center"
                     />
                     <SortableHeader
                       label="کل بستانکار (ریال)"
                       sortKey="total_credit"
-                      currentSortKey={sortKey}
-                      sortOrder={sortOrder}
+                      currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                       onSort={handleSort}
                       align="center"
                     />
                     <SortableHeader
                       label="مانده تراز (ریال)"
                       sortKey="balance"
-                      currentSortKey={sortKey}
-                      sortOrder={sortOrder}
+                      currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                       onSort={handleSort}
                       align="center"
                     />
                     <SortableHeader
                       label="وضعیت"
                       sortKey="status"
-                      currentSortKey={sortKey}
-                      sortOrder={sortOrder}
+                      currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                       onSort={handleSort}
                       align="center"
                       className="w-28"

@@ -269,32 +269,28 @@ export const AdjustmentManager: React.FC<AdjustmentManagerProps> = ({ initialCus
                 <SortableHeader
                   label="مشتری"
                   sortKey="customer_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="تاریخ ثبت"
                   sortKey="adjustment_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="نوع تعدیل"
                   sortKey="type"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="مبلغ (تومان)"
                   sortKey="amount"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />

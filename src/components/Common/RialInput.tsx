@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { formatRialNumber, parseRialNumber, numberToWordsPersian, toEnglishDigits } from '../../utils/jalali';
 
 interface RialInputProps {
+  label?: string;
   value: number;
   onChange: (val: number) => void;
   placeholder?: string;
@@ -17,6 +18,7 @@ interface RialInputProps {
 }
 
 export const RialInput: React.FC<RialInputProps> = ({
+  label,
   value,
   onChange,
   placeholder = 'مبلغ به ریال...',
@@ -67,6 +69,11 @@ export const RialInput: React.FC<RialInputProps> = ({
 
   return (
     <div className="w-full relative">
+      {label && (
+        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+          {label} {required && <span className="text-rose-500">*</span>}
+        </label>
+      )}
       <div className="relative flex items-center">
         <input
           type="text"

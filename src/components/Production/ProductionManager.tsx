@@ -96,35 +96,53 @@ export const ProductionManager: React.FC = () => {
   }, [showModal]);
 
   const loadData = () => {
-    setLogs(StorageService.getProductionLogs());
+    try {
+      const data = StorageService.getProductionLogs();
+      setLogs(Array.isArray(data) ? data.filter(Boolean) : []);
+    } catch (e) {
+      console.error('Error loading production logs:', e);
+      setLogs([]);
+    }
   };
 
   // Real-time calculation of total weight
+  const numWeightUnit = form.weight_unit !== '' ? Number(form.weight_unit) : 0;
+  const numMeters = form.meters !== '' ? Number(form.meters) : 0;
   const calculatedTotalWeight =
-    typeof form.weight_unit === 'number' && typeof form.meters === 'number'
-      ? parseFloat((form.weight_unit * form.meters).toFixed(3))
+    !isNaN(numWeightUnit) && !isNaN(numMeters) && numWeightUnit > 0 && numMeters > 0
+      ? parseFloat((numWeightUnit * numMeters).toFixed(3))
       : 0;
 
   const handleOpenModal = (log?: ProductionLog) => {
     setIsSubmitting(false);
     if (log) {
       setEditingLog(log);
+      const rawWUnit = log.weight_unit !== undefined && log.weight_unit !== null && log.weight_unit !== '' 
+        ? Number(log.weight_unit) 
+        : (log.weight_kg && log.meters_produced ? parseFloat((Number(log.weight_kg) / Number(log.meters_produced)).toFixed(3)) : '');
+      const rawMtrs = log.meters !== undefined && log.meters !== null && log.meters !== '' 
+        ? Number(log.meters) 
+        : (log.meters_produced ? Number(log.meters_produced) : '');
+      const rawTotalW = log.total_weight !== undefined && log.total_weight !== null && log.total_weight !== '' 
+        ? Number(log.total_weight) 
+        : (log.weight_kg ? Number(log.weight_kg) : 0);
+
       setForm({
         production_date: log.production_date || getTodayISO(),
-        size: log.size || log.pipe_size || '',
-        pressure: log.pressure || '',
-        type: log.type || (log.material_type?.includes('PE80') ? 'PE80' : 'PE100') || '',
-        diameter: log.diameter || '',
-        thickness: log.thickness || '',
-        motor_speed: log.motor_speed || '',
-        traction_speed: log.traction_speed || '',
-        die_mold: log.die_mold || '',
-        pin_needle: log.pin_needle || '',
-        weight_unit: log.weight_unit !== undefined ? log.weight_unit : (log.weight_kg && log.meters_produced ? parseFloat((log.weight_kg / log.meters_produced).toFixed(3)) : ''),
-        meters: log.meters !== undefined ? log.meters : (log.meters_produced || ''),
-        total_weight: log.total_weight !== undefined ? log.total_weight : (log.weight_kg || 0),
-        customer_name: log.customer_name || '',
-        notes: log.notes || '',
+        size: String(log.size || log.pipe_size || ''),
+        pressure: String(log.pressure || ''),
+        type: String(log.type || (log.material_type?.includes('PE80') ? 'PE80' : 'PE100') || ''),
+        diameter: String(log.diameter || ''),
+        thickness: String(log.thickness || ''),
+        motor_speed: String(log.motor_speed || ''),
+        traction_speed: String(log.traction_speed || ''),
+        die_mold: String(log.die_mold || ''),
+        pin_needle: String(log.pin_needle || ''),
+        weight_unit: rawWUnit !== '' && !isNaN(Number(rawWUnit)) ? Number(rawWUnit) : '',
+        meters: rawMtrs !== '' && !isNaN(Number(rawMtrs)) ? Number(rawMtrs) : '',
+        total_weight: !isNaN(Number(rawTotalW)) ? Number(rawTotalW) : 0,
+        customer_name: String(log.customer_name || ''),
+        notes: String(log.notes || ''),
       });
     } else {
       setEditingLog(null);
@@ -356,32 +374,28 @@ export const ProductionManager: React.FC = () => {
                 <SortableHeader
                   label="تاریخ"
                   sortKey="production_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="سایز"
                   sortKey="size"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="فشار"
                   sortKey="pressure"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="نوع"
                   sortKey="type"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
@@ -392,24 +406,21 @@ export const ProductionManager: React.FC = () => {
                 <SortableHeader
                   label="متراژ (متر)"
                   sortKey="meters"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="مجموع وزن (kg)"
                   sortKey="total_weight"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="سفارش دهنده"
                   sortKey="customer_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />

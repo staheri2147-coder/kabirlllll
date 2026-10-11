@@ -436,32 +436,28 @@ export const PaymentManager: React.FC<PaymentManagerProps> = ({
                 <SortableHeader
                   label="مشتری"
                   sortKey="customer_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="تاریخ دریافت"
                   sortKey="payment_date"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="روش پرداخت"
                   sortKey="payment_method"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />
                 <SortableHeader
                   label="مبلغ (تومان)"
                   sortKey="amount"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="right"
                 />

@@ -29,6 +29,7 @@ interface AuditHistoryModalProps {
   entityId?: string;
   documentNumber?: string;
   title?: string;
+  entityTitle?: string;
   subtitle?: string;
 }
 
@@ -38,9 +39,11 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
   entityType,
   entityId,
   documentNumber,
-  title = 'تاریخچه تغییرات و رویدادها (Audit Logs)',
+  title,
+  entityTitle,
   subtitle,
 }) => {
+  const displayTitle = title || entityTitle || 'تاریخچه تغییرات و رویدادها (Audit Logs)';
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionFilter, setActionFilter] = useState<'all' | 'create' | 'update' | 'confirm' | 'cancel' | 'delete' | 'print'>('all');
@@ -223,7 +226,7 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-sm sm:text-base font-black text-slate-800 truncate">
-                  {title}
+                  {displayTitle}
                 </h2>
                 {(() => {
                   const displayDoc =

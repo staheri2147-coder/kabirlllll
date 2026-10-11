@@ -631,12 +631,49 @@ export const CustomerReturnModal: React.FC<CustomerReturnModalProps> = ({
           editingReturn.id
         );
 
+        const availableItemsToMatch = [...(editingReturn.items || [])];
+
         const rows: ReturnRowState[] = items.map((item, idx) => {
-          const matchedItem = editingReturn.items.find(
-            (ri) =>
-              (item.invoice_item_id && ri.invoice_item_id === item.invoice_item_id) ||
-              (ri.invoice_id === item.invoice_id && ri.product_id === item.product_id)
-          );
+          let matchIdx = -1;
+
+          // 1. Match by invoice_item_id if available
+          if (item.invoice_item_id) {
+            matchIdx = availableItemsToMatch.findIndex(
+              (ri) => ri.invoice_item_id && ri.invoice_item_id === item.invoice_item_id
+            );
+          }
+
+          // 2. Match by invoice_id AND product_name / spec / code
+          if (matchIdx === -1) {
+            matchIdx = availableItemsToMatch.findIndex((ri) => {
+              if (ri.invoice_id !== item.invoice_id) return false;
+              if (item.product_name && ri.product_name && item.product_name.trim().toLowerCase() === ri.product_name.trim().toLowerCase()) return true;
+              if (item.product_spec && ri.product_spec && item.product_spec.trim().toLowerCase() === ri.product_spec.trim().toLowerCase()) return true;
+              if (item.product_code && ri.product_code && item.product_code === ri.product_code) return true;
+              if (item.product_id && ri.product_id && item.product_id !== 'prd-custom' && item.product_id === ri.product_id) return true;
+              return false;
+            });
+          }
+
+          // 3. Match by invoice_id and unit price
+          if (matchIdx === -1) {
+            matchIdx = availableItemsToMatch.findIndex(
+              (ri) => ri.invoice_id === item.invoice_id && ri.unit_price === item.unit_price
+            );
+          }
+
+          // 4. Fallback by invoice_id
+          if (matchIdx === -1) {
+            matchIdx = availableItemsToMatch.findIndex(
+              (ri) => ri.invoice_id === item.invoice_id
+            );
+          }
+
+          let matchedItem: any = null;
+          if (matchIdx !== -1) {
+            matchedItem = availableItemsToMatch[matchIdx];
+            availableItemsToMatch.splice(matchIdx, 1); // CRITICAL: Consume so next items cannot match it
+          }
 
           const isSelected = !!matchedItem;
           const returnMeters = matchedItem ? matchedItem.quantity_meters : item.available_for_return;
@@ -755,6 +792,9 @@ export const CustomerReturnModal: React.FC<CustomerReturnModalProps> = ({
           invoice_id: item.invoice_id,
           invoice_item_id: item.invoice_item_id,
           product_id: item.product_id,
+          product_name: item.product_name,
+          product_code: item.product_code,
+          product_spec: item.product_spec,
           quantity_meters: item.return_now_meters,
           unit_price: item.unit_price,
         })),

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ProductionLog } from '../../types';
-import { formatJalaliDate, formatNumber, toPersianDigits } from '../../utils/jalali';
+import { formatJalaliDate, formatNumber, toPersianDigits, jalaliStringToISO } from '../../utils/jalali';
 import { exportToExcel } from '../../utils/exportExcel';
 import { exportElementAsPng } from '../../utils/exportImage';
 import { PrintHeader } from '../Print/PrintHeader';
@@ -58,39 +58,67 @@ export const ProductionFilterReport: React.FC<ProductionFilterReportProps> = ({
     setMaxMeters('');
   };
 
-  const filtered = logs.filter((log) => {
-    const logSize = log.size || log.pipe_size || '';
+  const safeLogs = Array.isArray(logs) ? logs.filter(Boolean) : [];
+
+  const filtered = safeLogs.filter((log) => {
+    if (!log) return false;
+    const logSize = String(log.size ?? log.pipe_size ?? '').trim();
     if (sizeFilter.trim() && !logSize.toLowerCase().includes(sizeFilter.toLowerCase().trim())) {
       return false;
     }
-    if (pressureFilter.trim() && (!log.pressure || !log.pressure.toLowerCase().includes(pressureFilter.toLowerCase().trim()))) {
+    const pressureStr = String(log.pressure ?? '').trim();
+    if (pressureFilter.trim() && !pressureStr.toLowerCase().includes(pressureFilter.toLowerCase().trim())) {
       return false;
     }
     if (typeFilter !== 'all') {
-      const logType = log.type || (log.material_type?.includes('PE80') ? 'PE80' : 'PE100');
+      const rawType = log.type || (typeof log.material_type === 'string' && log.material_type.includes('PE80') ? 'PE80' : 'PE100');
+      const logType = String(rawType || '').trim();
       if (typeFilter === 'empty' && logType) return false;
       if (typeFilter !== 'empty' && logType !== typeFilter) return false;
     }
-    if (customerName.trim() && (!log.customer_name || !log.customer_name.toLowerCase().includes(customerName.toLowerCase().trim()))) {
+    const custStr = String(log.customer_name ?? '').trim();
+    if (customerName.trim() && !custStr.toLowerCase().includes(customerName.toLowerCase().trim())) {
       return false;
     }
-    if (dieMold.trim() && (!log.die_mold || !log.die_mold.toLowerCase().includes(dieMold.toLowerCase().trim()))) {
+    const dieStr = String(log.die_mold ?? '').trim();
+    if (dieMold.trim() && !dieStr.toLowerCase().includes(dieMold.toLowerCase().trim())) {
       return false;
     }
-    if (pinNeedle.trim() && (!log.pin_needle || !log.pin_needle.toLowerCase().includes(pinNeedle.toLowerCase().trim()))) {
+    const pinStr = String(log.pin_needle ?? '').trim();
+    if (pinNeedle.trim() && !pinStr.toLowerCase().includes(pinNeedle.toLowerCase().trim())) {
       return false;
     }
     if (startDate) {
       const pDate = log.production_date || log.created_at;
-      const pTime = new Date(pDate).getTime();
-      const sTime = new Date(startDate).getTime();
-      if (!isNaN(pTime) && !isNaN(sTime) && pTime < sTime) return false;
+      if (pDate) {
+        let pTime = new Date(pDate).getTime();
+        if (isNaN(pTime)) {
+          const iso = jalaliStringToISO(pDate);
+          if (iso) pTime = new Date(iso).getTime();
+        }
+        let sTime = new Date(startDate).getTime();
+        if (isNaN(sTime)) {
+          const iso = jalaliStringToISO(startDate);
+          if (iso) sTime = new Date(iso).getTime();
+        }
+        if (!isNaN(pTime) && !isNaN(sTime) && pTime < sTime) return false;
+      }
     }
     if (endDate) {
       const pDate = log.production_date || log.created_at;
-      const pTime = new Date(pDate).getTime();
-      const eTime = new Date(endDate).getTime();
-      if (!isNaN(pTime) && !isNaN(eTime) && pTime > eTime) return false;
+      if (pDate) {
+        let pTime = new Date(pDate).getTime();
+        if (isNaN(pTime)) {
+          const iso = jalaliStringToISO(pDate);
+          if (iso) pTime = new Date(iso).getTime();
+        }
+        let eTime = new Date(endDate).getTime();
+        if (isNaN(eTime)) {
+          const iso = jalaliStringToISO(endDate);
+          if (iso) eTime = new Date(iso).getTime();
+        }
+        if (!isNaN(pTime) && !isNaN(eTime) && pTime > eTime) return false;
+      }
     }
     const mtrs = Number(log.meters !== undefined && log.meters !== null ? log.meters : (log.meters_produced || 0)) || 0;
     if (minMeters && Number(minMeters) > 0 && mtrs < Number(minMeters)) {
@@ -103,11 +131,11 @@ export const ProductionFilterReport: React.FC<ProductionFilterReportProps> = ({
   });
 
   const totalMetersProduced = filtered.reduce(
-    (s, l) => s + (Number(l.meters !== undefined && l.meters !== null ? l.meters : (l.meters_produced || 0)) || 0),
+    (s, l) => s + (Number(l?.meters !== undefined && l?.meters !== null ? l.meters : (l?.meters_produced || 0)) || 0),
     0
   );
   const totalWeightKg = filtered.reduce(
-    (s, l) => s + (Number(l.total_weight !== undefined && l.total_weight !== null ? l.total_weight : (l.weight_kg || 0)) || 0),
+    (s, l) => s + (Number(l?.total_weight !== undefined && l?.total_weight !== null ? l.total_weight : (l?.weight_kg || 0)) || 0),
     0
   );
 
@@ -348,12 +376,14 @@ const ProductionPrintModal: React.FC<{
 
   if (!isOpen) return null;
 
-  const totalMetersProduced = logs.reduce(
-    (s, l) => s + (Number(l.meters !== undefined && l.meters !== null ? l.meters : (l.meters_produced || 0)) || 0),
+  const safeLogs = Array.isArray(logs) ? logs.filter(Boolean) : [];
+
+  const totalMetersProduced = safeLogs.reduce(
+    (s, l) => s + (Number(l?.meters !== undefined && l?.meters !== null ? l.meters : (l?.meters_produced || 0)) || 0),
     0
   );
-  const totalWeightKg = logs.reduce(
-    (s, l) => s + (Number(l.total_weight !== undefined && l.total_weight !== null ? l.total_weight : (l.weight_kg || 0)) || 0),
+  const totalWeightKg = safeLogs.reduce(
+    (s, l) => s + (Number(l?.total_weight !== undefined && l?.total_weight !== null ? l.total_weight : (l?.weight_kg || 0)) || 0),
     0
   );
 
@@ -391,7 +421,7 @@ const ProductionPrintModal: React.FC<{
           >
             <PrintHeader
               title="گزارش تجمیعی عملکرد خطوط تولید و اکستروژن لوله پلی‌اتیلن"
-              docNumber={toPersianDigits(logs.length)}
+              docNumber={toPersianDigits(filtered.length)}
               docNumberLabel="تعداد شیفت‌ها:"
             />
 
@@ -411,23 +441,24 @@ const ProductionPrintModal: React.FC<{
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-300">
-                {logs.length === 0 ? (
+                {filtered.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="py-6 text-center text-slate-400">
                       هیچ گزارشی در این بازه تولید ثبت نشده است.
                     </td>
                   </tr>
                 ) : (
-                  logs.map((l, idx) => {
+                  filtered.map((l, idx) => {
+                    if (!l) return null;
                     const mtrs = Number(l.meters !== undefined && l.meters !== null ? l.meters : (l.meters_produced || 0)) || 0;
                     const wTotal = Number(l.total_weight !== undefined && l.total_weight !== null ? l.total_weight : (l.weight_kg || 0)) || 0;
                     const rawWUnit = l.weight_unit !== undefined && l.weight_unit !== null ? l.weight_unit : (l.weight_kg && mtrs ? Number(l.weight_kg) / Number(mtrs) : 0);
                     const wUnit = typeof rawWUnit === 'number' ? rawWUnit : (parseFloat(String(rawWUnit)) || 0);
                     return (
-                      <tr key={l.id} className="hover:bg-slate-50">
+                      <tr key={l.id || `prd-print-${idx}`} className="hover:bg-slate-50">
                         <td className="p-1 border-l border-slate-300 font-bold">{toPersianDigits(idx + 1)}</td>
                         <td className="p-1 border-l border-slate-300 font-mono">{formatJalaliDate(l.production_date || l.created_at)}</td>
-                        <td className="p-1 border-l border-slate-300 font-bold text-blue-900">{l.size || l.pipe_size}</td>
+                        <td className="p-1 border-l border-slate-300 font-bold text-blue-900">{l.size || l.pipe_size || '—'}</td>
                         <td className="p-1 border-l border-slate-300">{l.pressure || '—'}</td>
                         <td className="p-1 border-l border-slate-300 font-bold">{l.type || l.material_type || '—'}</td>
                         <td className="p-1 border-l border-slate-300 text-right pr-2 font-bold">{l.customer_name || '—'}</td>
@@ -452,7 +483,7 @@ const ProductionPrintModal: React.FC<{
             <div className="border border-slate-400 rounded-lg p-3 bg-slate-50 flex items-center justify-between text-xs font-bold">
               <div>
                 <span>تعداد کل رکوردها: </span>
-                <span className="font-mono text-blue-900">{toPersianDigits(logs.length)} شیفت</span>
+                <span className="font-mono text-blue-900">{toPersianDigits(filtered.length)} شیفت</span>
               </div>
               <div className="flex items-center gap-6">
                 <div>

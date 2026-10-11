@@ -28,7 +28,7 @@ def package():
                     files_to_add.append((abs_path, rel_path))
             
     # 2. Add PHP and setup files from public if not in dist
-    for extra in ['api.php', 'db_config.php', '.htaccess', 'راهنمای_نصب_هاست_و_لوکال.txt']:
+    for extra in ['api.php', 'db_config.php', 'download_pkg.php', '.htaccess', 'راهنمای_نصب_هاست_و_لوکال.txt', 'AlborzPipe_MySQL_FullDump_2026-10-03.sql']:
         if extra not in seen:
             p = os.path.join(public_dir, extra)
             if os.path.exists(p):

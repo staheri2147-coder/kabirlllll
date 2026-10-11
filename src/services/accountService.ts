@@ -193,6 +193,8 @@ export class CustomerAccountService {
       cash: 'نقدی',
       card: 'کارتخوان',
       bank_transfer: 'حواله بانکی / پایا / ساتنا',
+      transfer: 'حواله بانکی',
+      pos: 'دستگاه کارتخوان (POS)',
       cheque: 'چک صیادی',
       other: 'سایر',
     };
@@ -384,6 +386,8 @@ export class CustomerAccountService {
         cash: 'نقدی',
         card: 'کارتخوان',
         bank_transfer: 'حواله بانکی',
+        transfer: 'حواله بانکی',
+        pos: 'دستگاه کارتخوان (POS)',
         cheque: 'چک صیادی',
         other: 'سایر',
       };

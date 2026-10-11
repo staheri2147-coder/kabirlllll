@@ -79,7 +79,7 @@ export const WarehouseManager: React.FC = () => {
 
   const handleOpenEditMovement = (m: MaterialMovement) => {
     setEditingMovement(m);
-    setModalType(m.type);
+    setModalType(m.type === 'out' ? 'out' : 'in');
     setMaterialName(m.material_name);
     setMovementDate(m.created_at ? m.created_at.substring(0, 10) : getTodayISO());
     setQuantity(String(m.quantity));
@@ -354,40 +354,35 @@ export const WarehouseManager: React.FC = () => {
                 <SortableHeader
                   label="نوع سند"
                   sortKey="type"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="تاریخ"
                   sortKey="created_at"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="ماده اولیه"
                   sortKey="material_name"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="تعداد کیسه"
                   sortKey="bags_count"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />
                 <SortableHeader
                   label="وزن (کیلوگرم)"
                   sortKey="quantity"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
+                  currentSort={sortKey ? { key: sortKey, direction: sortOrder } : null}
                   onSort={handleSort}
                   align="center"
                 />

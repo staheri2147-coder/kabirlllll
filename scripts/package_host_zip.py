@@ -15,6 +15,7 @@ files_to_zip = [
     ('index.html', 'index.html'),
     ('api.php', 'api.php'),
     ('db_config.php', 'db_config.php'),
+    ('download_pkg.php', 'download_pkg.php'),
     ('راهنمای_نصب_هاست_و_لوکال.txt', 'راهنمای_نصب_هاست_و_لوکال.txt'),
     ('AlborzPipe_MySQL_FullDump_2026-10-03.sql', 'AlborzPipe_MySQL_FullDump_2026-10-03.sql'),
 ]
@@ -49,5 +50,6 @@ with zipfile.ZipFile(out_zip, 'w', zipfile.ZIP_DEFLATED) as z:
 
 if os.path.exists(dist_dir):
     shutil.copyfile(out_zip, dist_out_zip)
+shutil.copyfile(out_zip, 'alborz_pipe_latest_package.zip')
 
 print(f"Packaged latest host zip: {out_zip} ({os.path.getsize(out_zip)} bytes)")

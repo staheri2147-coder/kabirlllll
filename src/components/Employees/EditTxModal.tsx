@@ -46,6 +46,10 @@ export const EditTxModal: React.FC<EditTxModalProps> = ({
     };
 
     StorageService.updateEmployeeTransaction(updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+    }
+    StorageService.pushToHost().catch(() => {});
     onSaved();
   };
 

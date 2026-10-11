@@ -26,6 +26,7 @@ interface OrderDetailModalProps {
   onCancelOrder?: (order: Order) => void;
   onConfirm?: (order: Order) => void;
   onViewHistory?: (order: Order) => void;
+  onNavigateToInvoice?: (invoiceId: string) => void;
 }
 
 export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -38,6 +39,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onCancelOrder,
   onConfirm,
   onViewHistory,
+  onNavigateToInvoice,
 }) => {
   if (!isOpen || !order) return null;
 

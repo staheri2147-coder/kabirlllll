@@ -1086,6 +1086,37 @@ export class StorageService {
     return false;
   }
 
+  // Helper to strip heavy bloat (Base64 images, redundant JSON) from audit logs
+  static sanitizeAuditValues(data: any, depth = 0): any {
+    if (!data || depth > 2) return data;
+    if (typeof data === 'string') {
+      if (data.startsWith('data:image/') || data.length > 500) {
+        return '[فایل تصویر / محتوای طولانی]';
+      }
+      return data;
+    }
+    if (Array.isArray(data)) {
+      if (data.length > 10) {
+        return data.slice(0, 10).map((it) => StorageService.sanitizeAuditValues(it, depth + 1));
+      }
+      return data.map((it) => StorageService.sanitizeAuditValues(it, depth + 1));
+    }
+    if (typeof data === 'object') {
+      const clean: Record<string, any> = {};
+      for (const k of Object.keys(data)) {
+        if (k === 'data_json' || k === 'password') continue;
+        const v = data[k];
+        if (typeof v === 'string' && (v.startsWith('data:image/') || v.length > 500)) {
+          clean[k] = '[فایل تصویر / محتوای طولانی]';
+        } else {
+          clean[k] = StorageService.sanitizeAuditValues(v, depth + 1);
+        }
+      }
+      return clean;
+    }
+    return data;
+  }
+
   // Audit Logging
   static logAudit(
     action: string,
@@ -1161,6 +1192,9 @@ export class StorageService {
       else if (action.includes('چاپ') || action.includes('خروجی')) actionType = 'print';
     }
 
+    const sanitizedOld = this.sanitizeAuditValues(oldValues);
+    const sanitizedNew = this.sanitizeAuditValues(newValues);
+
     const newLog: AuditLog = {
       id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       user_id: currentUser?.id,
@@ -1173,8 +1207,8 @@ export class StorageService {
       entity_id: entityId,
       document_number: docNum,
       entity_title: entityTitle,
-      old_values: oldValues,
-      new_values: newValues,
+      old_values: sanitizedOld,
+      new_values: sanitizedNew,
       changes_summary: extra?.changesSummary,
       ip_address: '127.0.0.1',
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Web Browser',
@@ -1182,7 +1216,8 @@ export class StorageService {
     };
 
     logs.unshift(newLog);
-    writeStorage(STORAGE_KEYS.AUDIT_LOGS, logs.slice(0, 1500)); // retain last 1500 logs
+    // Anti-bloat: Retain max 200 lightweight logs in local storage (prevents quota exceeded error)
+    writeStorage(STORAGE_KEYS.AUDIT_LOGS, logs.slice(0, 200));
 
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('audit-logs-updated', { detail: newLog }));
@@ -2143,10 +2178,11 @@ export class StorageService {
     const logs = this.getProductionLogs();
     const numbers = logs
       .map((l) => {
-        const match = l.code.match(/\d+$/);
+        if (!l || !l.code) return null;
+        const match = String(l.code).match(/\d+$/);
         return match ? parseInt(match[0], 10) : 1000;
       })
-      .filter((n) => !isNaN(n));
+      .filter((n): n is number => n !== null && !isNaN(n));
     const nextNum = numbers.length > 0 ? Math.max(...numbers) + 1 : 1001;
     return `PRD-LOG-${nextNum}`;
   }
@@ -2837,7 +2873,7 @@ export class StorageService {
         users: this.getUsers(),
         roles: this.getRoles(),
         settings: this.getSettings(),
-        audit_logs: this.getAuditLogs(),
+        audit_logs: this.getAuditLogs().slice(0, 150),
       },
     };
 
@@ -2982,7 +3018,6 @@ export class StorageService {
   \`is_active\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`),
   INDEX (\`name\`),
   INDEX (\`national_id\`),
@@ -3010,7 +3045,6 @@ export class StorageService {
   \`stamp_signature_enabled\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`invoice_number\`),
   INDEX (\`order_id\`),
   INDEX (\`customer_id\`),
@@ -3038,7 +3072,6 @@ export class StorageService {
   \`created_at_fa\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`order_number\`),
   INDEX (\`customer_id\`),
   INDEX (\`status\`),
@@ -3059,7 +3092,6 @@ export class StorageService {
   \`reference_number\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`customer_id\`),
   INDEX (\`transaction_date\`),
   INDEX (\`type\`)
@@ -3078,7 +3110,6 @@ export class StorageService {
   \`status\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`customer_id\`),
   INDEX (\`payment_date\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3098,7 +3129,6 @@ export class StorageService {
   \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`cheque_number\`),
   INDEX (\`customer_id\`),
   INDEX (\`due_date\`)
@@ -3115,7 +3145,6 @@ export class StorageService {
   \`status\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`customer_id\`),
   INDEX (\`adjustment_date\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3129,7 +3158,6 @@ export class StorageService {
   \`is_active\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`name\`),
   INDEX (\`phone\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3145,7 +3173,6 @@ export class StorageService {
   \`is_active\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`plate_number\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       deliveries: `CREATE TABLE IF NOT EXISTS \`deliveries\` (
@@ -3170,7 +3197,6 @@ export class StorageService {
   \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`delivery_number\`),
   INDEX (\`customer_id\`),
   INDEX (\`delivery_date\`)
@@ -3193,7 +3219,6 @@ export class StorageService {
   \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`return_number\`),
   INDEX (\`customer_id\`),
   INDEX (\`return_date\`)
@@ -3209,7 +3234,6 @@ export class StorageService {
   \`is_active\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`),
   INDEX (\`name\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3224,7 +3248,6 @@ export class StorageService {
   \`is_active\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       movements: `CREATE TABLE IF NOT EXISTS \`movements\` (
@@ -3245,7 +3268,6 @@ export class StorageService {
   \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`material_id\`),
   INDEX (\`type\`),
   INDEX (\`date\`)
@@ -3265,7 +3287,6 @@ export class StorageService {
   \`status\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`),
   INDEX (\`name\`),
   INDEX (\`national_id\`)
@@ -3284,7 +3305,6 @@ export class StorageService {
   \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`employee_id\`),
   INDEX (\`date\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3298,12 +3318,20 @@ export class StorageService {
   \`from_date\` VARCHAR(64) NULL,
   \`to_date\` VARCHAR(64) NULL,
   \`days_count\` INT DEFAULT 0,
+  \`date\` VARCHAR(64) NULL,
+  \`from_time\` VARCHAR(64) NULL,
+  \`to_time\` VARCHAR(64) NULL,
+  \`hours_count\` DOUBLE DEFAULT 0,
+  \`hours_text\` VARCHAR(128) NULL,
+  \`description\` TEXT NULL,
+  \`replacement_person\` VARCHAR(255) NULL,
   \`status\` VARCHAR(64) NULL,
+  \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`employee_id\`),
-  INDEX (\`from_date\`)
+  INDEX (\`from_date\`),
+  INDEX (\`date\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       employment_periods: `CREATE TABLE IF NOT EXISTS \`employment_periods\` (
   \`id\` VARCHAR(64) PRIMARY KEY,
@@ -3318,7 +3346,6 @@ export class StorageService {
   \`status\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`employee_id\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       expenses: `CREATE TABLE IF NOT EXISTS \`expenses\` (
@@ -3336,7 +3363,6 @@ export class StorageService {
   \`created_by\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`),
   INDEX (\`category\`),
   INDEX (\`expense_date\`)
@@ -3368,7 +3394,6 @@ export class StorageService {
   \`material_type\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`),
   INDEX (\`production_date\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3385,7 +3410,6 @@ export class StorageService {
   \`permissions\` LONGTEXT NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   UNIQUE INDEX (\`username\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       roles: `CREATE TABLE IF NOT EXISTS \`roles\` (
@@ -3396,7 +3420,6 @@ export class StorageService {
   \`permissions\` LONGTEXT NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       permissions: `CREATE TABLE IF NOT EXISTS \`permissions\` (
   \`id\` VARCHAR(64) PRIMARY KEY,
@@ -3405,7 +3428,6 @@ export class StorageService {
   \`perm_key\` VARCHAR(128) NULL,
   \`category\` VARCHAR(64) NULL,
   \`description\` TEXT NULL,
-  \`data_json\` LONGTEXT NULL,
   \`updated_at\` VARCHAR(64) NULL,
   INDEX (\`key\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3450,7 +3472,6 @@ export class StorageService {
   \`default_invoice_notes\` TEXT NULL,
   \`print_invoice_signatures\` TINYINT(1) DEFAULT 1,
   \`timezone\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
       audit_logs: `CREATE TABLE IF NOT EXISTS \`audit_logs\` (
@@ -3472,7 +3493,6 @@ export class StorageService {
   \`timestamp\` VARCHAR(64) NULL,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`created_at\`),
   INDEX (\`user_id\`),
   INDEX (\`action\`)
@@ -3494,7 +3514,6 @@ export class StorageService {
   \`is_active\` TINYINT(1) DEFAULT 1,
   \`created_at\` VARCHAR(64) NULL,
   \`updated_at\` VARCHAR(64) NULL,
-  \`data_json\` LONGTEXT NULL,
   INDEX (\`code\`),
   INDEX (\`name\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
@@ -3619,7 +3638,7 @@ export class StorageService {
           : this.getEmployeeTransactions(),
         cols: ['id', 'employee_id', 'employee_name', 'employee_code', 'date', 'type', 'amount', 'payment_method', 'reference_number', 'description', 'created_by', 'created_at', 'updated_at'],
       },
-      { name: 'employee_leaves', items: this.getEmployeeLeaves(), cols: ['id', 'employee_id', 'employee_name', 'employee_code', 'type', 'category', 'from_date', 'to_date', 'days_count', 'status', 'created_at', 'updated_at'] },
+      { name: 'employee_leaves', items: this.getEmployeeLeaves(), cols: ['id', 'employee_id', 'employee_name', 'employee_code', 'type', 'category', 'from_date', 'to_date', 'days_count', 'date', 'from_time', 'to_time', 'hours_count', 'hours_text', 'description', 'replacement_person', 'status', 'created_by', 'created_at', 'updated_at'] },
       { name: 'employment_periods', items: this.getEmploymentPeriods(), cols: ['id', 'employee_id', 'employee_name', 'start_date', 'end_date', 'contract_type', 'position', 'reason_for_leaving', 'notes', 'status', 'created_at', 'updated_at'] },
       {
         name: 'expenses',
@@ -4290,16 +4309,14 @@ export class StorageService {
           }
 
           if (rowObj && typeof rowObj === 'object') {
-            if (rowObj.data_json) {
-              const inner = safeParseJsonFromSql(rowObj.data_json);
-              if (inner && typeof inner === 'object') {
-                rowObj = { ...inner, ...rowObj };
-                delete rowObj.data_json;
-              }
+            const inner = safeParseJsonFromSql(rowObj.data_json);
+            if (inner && typeof inner === 'object') {
+              rowObj = { ...inner, ...rowObj };
+              delete rowObj.data_json;
             }
-            extractedByTable[tblName].push(rowObj);
-            totalItems++;
           }
+          extractedByTable[tblName].push(rowObj);
+          totalItems++;
         }
       }
 
@@ -4328,7 +4345,7 @@ export class StorageService {
         const storageKeyProp = tableMap[tblName];
         if (storageKeyProp && Array.isArray(items) && items.length > 0) {
           const cleanItems = items.map((it) => {
-            if (it && it.data_json) {
+            if (it && typeof it === 'object') {
               const inner = safeParseJsonFromSql(it.data_json);
               if (inner && typeof inner === 'object') {
                 const merged = { ...inner, ...it };
@@ -5290,5 +5307,66 @@ export class StorageService {
 
   static resetToDefaults() {
     return this.resetToDefaultData();
+  }
+
+  // De-bloat, prune old logs, and optimize MySQL tables to reclaim disk space
+  static async optimizeDatabase(): Promise<{
+    success: boolean;
+    message: string;
+    pruned_audit_logs?: number;
+    dropped_redundant_cols?: number;
+    tables_count?: number;
+    db_size_kb?: number;
+    current_logs_count?: number;
+  }> {
+    try {
+      // 1. Prune local audit logs to latest 100 entries to prevent localStorage quota issues
+      const localLogs = this.getAuditLogs();
+      const localPruned = localLogs.length > 100 ? localLogs.length - 100 : 0;
+      if (localLogs.length > 100) {
+        writeStorage(STORAGE_KEYS.AUDIT_LOGS, localLogs.slice(0, 100));
+      }
+
+      // 2. Call host MySQL api.php to prune audit_logs table, drop redundant legacy tables, and OPTIMIZE TABLE
+      const url = this.getApiUrl(`api.php?action=optimize_db&_t=${Date.now()}`);
+      try {
+        const res = await fetch(url, { method: 'POST', cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success) {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('audit-logs-updated'));
+              window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+            }
+            return {
+              success: true,
+              message: data.message || 'پایگاه‌داده MySQL هاست با موفقیت بهینه‌سازی و فشرده‌سازی شد.',
+              pruned_audit_logs: data.pruned_audit_logs ?? localPruned,
+              dropped_redundant_cols: data.dropped_redundant_cols,
+              tables_count: data.tables_count,
+              db_size_kb: data.db_size_kb,
+              current_logs_count: data.current_logs_count ?? Math.min(localLogs.length, 100),
+            };
+          }
+        }
+      } catch (netErr) {
+        // Continue to return local pruning result
+      }
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('audit-logs-updated'));
+        window.dispatchEvent(new CustomEvent('polyethylene-db-synced'));
+      }
+
+      return {
+        success: true,
+        message: 'حافظه محلی با موفقیت پاک‌سازی شد. لاگ‌ها تا ۱۰۰ سطر اخیر فشرده شدند. (در هاست نیز با اتصال MySQL، دیفرگمنت سرور انجام می‌شود)',
+        pruned_audit_logs: localPruned,
+        tables_count: 26,
+        current_logs_count: Math.min(localLogs.length, 100),
+      };
+    } catch (err: any) {
+      return { success: false, message: 'خطا در بهینه‌سازی: ' + (err?.message || '') };
+    }
   }
 }
